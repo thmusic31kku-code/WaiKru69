@@ -1,0 +1,25 @@
+[build]
+  publish = "public"
+  command = ""
+
+# Cache static assets aggressively, but not the HTML/JS that may change
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+# ทำให้ /admin ใช้งานได้ทั้งแบบมี/ไม่มี trailing slash
+[[redirects]]
+  from = "/admin"
+  to = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/"
+  to = "/admin/index.html"
+  status = 200

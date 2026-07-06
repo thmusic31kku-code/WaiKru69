@@ -1,0 +1,478 @@
+﻿<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>พิธีไหว้ครูดนตรี | คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น</title>
+  <meta name="description" content="ระบบลงทะเบียนเข้าร่วมพิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ ประจำปีการศึกษา 2569">
+
+  <link rel="icon" href="assets/FA-logo.svg" type="image/svg+xml">
+  <!-- โหลดสไตล์หลัก -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  
+  <style>
+    /* ซ่อน scrollbar กรณีที่ไม่จำเป็น */
+    .kku-marquee-wrapper { mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent); }
+    .kku-chip { display: inline-flex; align-items: center; height: 32px; padding: 0 12px; border-radius: 5994px; background-color: rgba(255, 255, 255, 0.4); border: 1px solid rgba(255, 255, 255, 0.6); backdrop-filter: blur(12px); color: rgba(58, 24, 37, 0.9); font-size: 0.85rem; font-weight: 700; margin-bottom: 24px; }
+  </style>
+</head>
+<body class="is-loading bg-slate-50 flex flex-col min-h-screen">
+
+  <!-- ==========================================
+       PAGE LOADER
+       ========================================== -->
+  <div class="page-loader" id="pageLoader" aria-hidden="true">
+    <div class="loader-rings"><span></span><span></span><span></span></div>
+    <div class="mt-6 font-bold text-slate-700 text-sm tracking-wide flex items-center gap-2">
+      กำลังซิงก์ข้อมูลกับเซิร์ฟเวอร์ <span class="loader-dots"><i></i><i></i><i></i></span>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       HEADER (Floating Nav)
+       ========================================== -->
+  <div class="kku-header-wrapper">
+    <div class="kku-container">
+      <div class="kku-header-backdrop"></div>
+      <header class="kku-header-surface" id="mainHeader">
+        <div class="kku-header-inner">
+          <div class="kku-header-left">
+            <a href="index.html" class="kku-brand">
+              <img src="assets/Main-logo.svg" alt="ตราสัญลักษณ์พิธีไหว้ครู" style="width:90px; height:auto;">
+            </a>
+          </div>
+          <div class="kku-header-right hidden-mobile">
+            <a href="donate.html" class="kku-btn kku-btn-text text-sm">ร่วมสมทบเงิน</a>
+            <a href="register.html" class="kku-btn kku-btn-primary shadow-sm hover-scale-105">ลงทะเบียนเข้าร่วม</a>
+          </div>
+        </div>
+      </header>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <main class="kku-main-content">
+
+    <!-- HERO SECTION -->
+    <section id="hero" class="kku-hero-section">
+      <div class="kku-container">
+        <div class="kku-hero-bg fade-in-up">
+          <div class="kku-hero-content">
+            
+            <!-- Status Badge -->
+            <div class="kku-chip border border-primary-main/20 bg-primary-light">
+              <span class="text-primary-dark font-bold tracking-wide text-xs" id="registrationStatusChip">ระบบสำรองที่นั่งเข้าร่วมงาน</span>
+            </div>
+
+            <div class="mb-8">
+              <h1 class="kku-hero-title">พิธีไหว้ครูดนตรี<br><span class="text-primary-main">ภาคตะวันออกเฉียงเหนือ</span></h1>
+              <p class="kku-hero-subtitle" id="eventSubtitle">
+                <span class="skeleton w-64 h-6 rounded-md"></span>
+              </p>
+            </div>
+
+            <div class="kku-hero-actions">
+              <a href="register.html" class="kku-btn kku-btn-primary kku-btn-large shadow-lg hover:-translate-y-1" id="btnRegisterHero">ลงทะเบียน &amp; สำรองที่นั่ง</a>
+              <a href="donate.html" class="kku-btn kku-btn-outline kku-btn-large hover:-translate-y-1">ร่วมทำบุญสมทบงาน</a>
+            </div>
+
+            <div class="mt-8 text-slate-600 font-medium flex items-center gap-2" id="seatsStatusText">
+              <span class="skeleton w-48 h-5 rounded-md"></span>
+            </div>
+
+            <!-- Auto-scrolling Marquee -->
+            <div class="kku-marquee-wrapper mt-12">
+              <div class="kku-marquee-content">
+                <div class="kku-marquee-item">พิธีเจริญพระพุทธมนต์</div><div class="kku-marquee-item">การบรรเลงดนตรีถวายมือ</div>
+                <div class="kku-marquee-item">พิธีครอบครู</div><div class="kku-marquee-item">ครอบฉิ่ง</div>
+                <div class="kku-marquee-item">สาธุการ</div><div class="kku-marquee-item">ตระโหมโรง</div>
+                <div class="kku-marquee-item">กระบองกัน</div><div class="kku-marquee-item">บาทสกุณี</div>
+                <!-- Duplicate for seamless loop -->
+                <div class="kku-marquee-item">พิธีเจริญพระพุทธมนต์</div><div class="kku-marquee-item">การบรรเลงดนตรีถวายมือ</div>
+                <div class="kku-marquee-item">พิธีครอบครู</div><div class="kku-marquee-item">ครอบฉิ่ง</div>
+                <div class="kku-marquee-item">สาธุการ</div><div class="kku-marquee-item">ตระโหมโรง</div>
+                <div class="kku-marquee-item">กระบองกัน</div><div class="kku-marquee-item">บาทสกุณี</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATISTICS SECTION -->
+    <section class="kku-section">
+      <div class="kku-container fade-in-up delay-100">
+        <div class="kku-grid-3">
+          <div class="kku-card center bg-white p-8">
+            <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">ยอดบริจาคสมทบทุน</h4>
+            <div class="text-3xl sm:text-4xl font-extrabold text-primary-main flex items-baseline justify-center gap-2" id="totalDonationAmount">
+              <span class="skeleton w-24 h-10 rounded"></span> <span class="text-base text-slate-400 font-medium">บาท</span>
+            </div>
+          </div>
+          <div class="kku-card center bg-white p-8">
+            <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">จำนวนผู้ร่วมทำบุญ</h4>
+            <div class="text-3xl sm:text-4xl font-extrabold text-slate-800 flex items-baseline justify-center gap-2" id="totalDonors">
+              <span class="skeleton w-16 h-10 rounded"></span> <span class="text-base text-slate-400 font-medium">ท่าน</span>
+            </div>
+          </div>
+          <div class="kku-card center bg-white p-8">
+            <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">ผู้ลงทะเบียนเข้าร่วม</h4>
+            <div class="text-3xl sm:text-4xl font-extrabold text-slate-800 flex items-baseline justify-center gap-2" id="totalParticipants">
+              <span class="skeleton w-16 h-10 rounded"></span> <span class="text-base text-slate-400 font-medium">คน</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCHEDULE SECTION -->
+    <section id="schedule" class="kku-section bg-white border-y border-slate-200">
+      <div class="kku-container">
+        <div class="kku-section-header fade-in-up">
+          <span class="eyebrow text-primary-main text-xs uppercase tracking-widest block mb-2 font-bold">Schedule</span>
+          <h2 class="kku-section-title">กำหนดการพิธีการ</h2>
+          <p class="kku-section-desc" id="metaVenue">
+            <span class="skeleton w-64 h-5 rounded-md"></span>
+          </p>
+        </div>
+        
+        <div class="kku-grid-2 fade-in-up delay-100">
+          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm">
+            <div class="border-b border-slate-200 pb-4 mb-6">
+              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 m-0" id="dateDay1">วันเสาร์ที่ 25 กรกฎาคม 2569</h3>
+            </div>
+            <div class="kku-timeline">
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">17.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">พิธีเจริญพระพุทธมนต์</strong><span class="text-slate-500 text-sm mt-1 block">นิมนต์พระสงฆ์ 5 รูป เจริญพระพุทธมนต์</span></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">18.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">ลงทะเบียน</strong><span class="text-slate-500 text-sm mt-1 block">สแกน E-Ticket เข้าสู่พื้นที่จัดงาน</span></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">18.30 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">การบรรเลงดนตรีถวายมือ</strong><span class="text-slate-500 text-sm mt-1 block">บรรเลงดนตรีไทยและพื้นบ้าน (ถึง 23.30 น.)</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm">
+            <div class="border-b border-slate-200 pb-4 mb-6">
+              <h3 class="text-xl sm:text-2xl font-bold text-slate-800 m-0" id="dateDay2">วันอาทิตย์ที่ 26 กรกฎาคม 2569</h3>
+            </div>
+            <div class="kku-timeline">
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">07.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">พิธีเจริญพระพุทธมนต์ (เช้า)</strong></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">08.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">ลงทะเบียน</strong></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time highlight">09.00 น.</div>
+                <div class="kku-timeline-detail highlight"><strong class="text-xl text-primary-dark">พิธีไหว้ครูดนตรี</strong><span class="text-primary-main text-sm font-medium mt-1 block">ผู้อ่านโองการไหว้ครู โดย ผศ.ดร.ประชา สามเสน</span></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time highlight">11.30 น.</div>
+                <div class="kku-timeline-detail highlight"><strong class="text-xl text-primary-dark">พิธีครอบครู</strong><span class="text-primary-main text-sm mt-1 block">เริ่มดำเนินการครอบครูตามลำดับประเภท</span></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">13.30 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">เสร็จสิ้นพิธีการ</strong><span class="text-slate-500 text-sm mt-1 block">ถ่ายภาพหมู่เป็นที่ระลึก</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KHROB KHRU INFO SECTION -->
+    <section id="khrob" class="kku-section">
+      <div class="kku-container fade-in-up">
+        <div class="kku-section-header">
+          <span class="eyebrow text-primary-main text-xs uppercase tracking-widest block mb-2 font-bold">Ceremony Details</span>
+          <h2 class="kku-section-title">ประเภทการครอบครูและเงินกำนล</h2>
+          <p class="kku-section-desc">ข้อมูลราคานี้ดึงจากฐานข้อมูลแบบเรียลไทม์ ผู้เข้าร่วมสามารถแจ้งความประสงค์ได้ในขั้นตอนการลงทะเบียน</p>
+        </div>
+
+        <div class="khrob-grid">
+          <div class="khrob-card-grid">
+            <article class="khrob-card">
+              <div class="khrob-card-head">
+                <span class="khrob-card-icon bg-primary-light text-primary-main">
+                  <i class="fa-solid fa-music"></i>
+                </span>
+                <span class="khrob-card-badge">ครอบฉิ่ง</span>
+              </div>
+              <div class="khrob-card-price"><span id="price_ching"><span class="skeleton w-16 h-10 rounded"></span></span> <small>บาท</small></div>
+            </article>
+
+            <article class="khrob-card">
+              <div class="khrob-card-head">
+                <span class="khrob-card-icon bg-gold-100 text-gold-700">
+                  <i class="fa-solid fa-praying-hands"></i>
+                </span>
+                <span class="khrob-card-badge">สาธุการ</span>
+              </div>
+              <div class="khrob-card-price"><span id="price_sathukan"><span class="skeleton w-16 h-10 rounded"></span></span> <small>บาท</small></div>
+            </article>
+
+            <article class="khrob-card">
+              <div class="khrob-card-head">
+                <span class="khrob-card-icon bg-slate-100 text-slate-800">
+                  <i class="fa-solid fa-drum"></i>
+                </span>
+                <span class="khrob-card-badge">ตระโหมโรง</span>
+              </div>
+              <div class="khrob-card-price"><span id="price_tra_hom_roeng"><span class="skeleton w-16 h-10 rounded"></span></span> <small>บาท</small></div>
+            </article>
+
+            <article class="khrob-card">
+              <div class="khrob-card-head">
+                <span class="khrob-card-icon bg-primary-main text-white">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </span>
+                <span class="khrob-card-badge">กระบองกัน</span>
+              </div>
+              <div class="khrob-card-price text-primary-main"><span id="price_krabong_kan"><span class="skeleton w-16 h-10 rounded"></span></span> <small>บาท</small></div>
+            </article>
+
+            <article class="khrob-card khrob-card-highlight">
+              <div class="khrob-card-head">
+                <span class="khrob-card-icon bg-gold-200 text-gold-800">
+                  <i class="fa-solid fa-feather-pointed"></i>
+                </span>
+                <span class="khrob-card-badge">บาทสกุณี</span>
+              </div>
+              <div class="khrob-card-price text-primary-dark"><span id="price_bat_sakunee"><span class="skeleton w-20 h-12 rounded"></span></span> <small>บาท</small></div>
+              <p class="khrob-card-note">ขั้นสูงสุดของการครอบดนตรีปี่พาทย์</p>
+            </article>
+          </div>
+
+          <aside class="khrob-callout">
+            <div class="khrob-callout-top">
+              <span class="khrob-callout-label">ค่าขันไหว้ครู</span>
+              <h3 class="khrob-callout-title">ขันไหว้ครบจัดให้พร้อม</h3>
+            </div>
+            <p class="khrob-callout-copy">ทางคณะผู้จัดงานจัดเตรียมขันไหว้ครู พร้อมเงินกำนลสำหรับพิธีไว้ให้ท่านอย่างครบถ้วน เพียงนำมาใส่พานและพร้อมร่วมงาน</p>
+            <div class="khrob-callout-price">
+              <span id="price_khan"><span class="skeleton w-20 h-12 rounded"></span></span>
+              <span class="khrob-callout-unit">บาท / ขัน</span>
+            </div>
+            <div class="khrob-callout-meta">
+              <span><i class="fa-solid fa-check"></i> เหมาะสำหรับผู้เข้าร่วมทุกระดับ</span>
+              <span><i class="fa-solid fa-clock"></i> อำนวยความสะดวกโดยทีมงาน</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ SECTION -->
+    <section id="faq" class="kku-section bg-slate-50 border-t border-slate-200">
+      <div class="kku-container kku-max-w-md fade-in-up">
+        <div class="kku-section-header">
+          <span class="eyebrow text-primary-main text-xs uppercase tracking-widest block mb-2 font-bold">FAQ</span>
+          <h2 class="kku-section-title">คำถามที่พบบ่อย</h2>
+        </div>
+        
+        <div class="kku-accordion-group shadow-sm bg-white border border-slate-200 rounded-2xl">
+          <div class="kku-accordion border-b border-slate-100">
+            <button class="kku-accordion-btn">
+              <span>ต้องลงทะเบียนล่วงหน้าหรือไม่?</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="kku-accordion-content">
+              <p>จำเป็นต้องลงทะเบียนล่วงหน้าผ่านเมนู "ลงทะเบียน" ในเว็บไซต์นี้ โดยเข้าสู่ระบบด้วยบัญชี Google เพื่อสำรองที่นั่งและรับใบ E-Ticket พร้อม QR code สำหรับสแกนเข้างาน เพื่อความรวดเร็วในการจัดเตรียมสถานที่</p>
+            </div>
+          </div>
+          <div class="kku-accordion border-b border-slate-100">
+            <button class="kku-accordion-btn">
+              <span>เงินกำนลต้องเตรียมอย่างไร?</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="kku-accordion-content">
+              <p>ทางผู้จัดงานเตรียมขันไหว้ครูไว้ให้ ขันละ 59 บาท โดยผู้เข้าร่วมต้องเตรียมเงินกำนลเพิ่มเติมใส่ขันด้วยตนเองตามจำนวนที่ระบุไว้ในแต่ละประเภทการครอบครูที่ท่านเลือก</p>
+            </div>
+          </div>
+          <div class="kku-accordion">
+            <button class="kku-accordion-btn">
+              <span>ปิดรับลงทะเบียนเมื่อไร?</span>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="kku-accordion-content">
+              <p>กรุณาส่งแบบฟอร์มตอบรับการเข้าร่วมผ่านเว็บไซต์นี้ภายในวันที่ <strong>20 กรกฎาคม 2569</strong> หรือจนกว่าที่นั่งจะเต็มตามโควตาที่กำหนด</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       FOOTER (refreshed: Font Awesome + modern layout)
+       ========================================== -->
+  <footer class="footer-new w-full mt-auto" role="contentinfo">
+    <div class="footer-inner max-w-7xl mx-auto px-4 py-8">
+      <div class="flex items-center gap-4">
+        <img src="assets/KKU-main.svg" alt="คณะศิลปกรรมศาสตร์" class="h-10">
+        <div>
+          <p class="text-sm font-semibold text-slate-800 m-0">คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น</p>
+          <p class="text-xs text-slate-500 m-0">ระบบบริหารจัดการกิจกรรมและฐานข้อมูล • &copy; 2569</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <nav class="footer-nav hidden sm:flex gap-4 text-sm text-slate-600">
+          <a href="#schedule" class="hover:text-primary-main">กำหนดการ</a>
+          <a href="#khrob" class="hover:text-primary-main">การครอบครู</a>
+          <a href="register.html" class="hover:text-primary-main">ลงทะเบียน</a>
+          <a href="donate.html" class="hover:text-primary-main">ร่วมสมทบ</a>
+        </nav>
+
+        <div class="footer-social flex items-center gap-3">
+          <a href="https://www.facebook.com/kkustudentunion" target="_blank" rel="noreferrer" aria-label="Facebook" class="social-btn">
+            <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+          </a>
+          <a href="#" aria-label="Instagram" class="social-btn">
+            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+          </a>
+          <a href="#" aria-label="Contact" class="social-btn">
+            <i class="fa-solid fa-comment-dots" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       JAVASCRIPT ARCHITECTURE & LOGIC
+       ========================================== -->
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      
+      // --- 1. UI Toggles ---
+      const navToggle = document.getElementById('navToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (navToggle && mobileMenu) {
+        navToggle.addEventListener('click', () => {
+          mobileMenu.classList.toggle('active');
+        });
+        document.querySelectorAll('.mobile-link').forEach(link => {
+          link.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+          });
+        });
+      }
+
+      // FAQ Accordion
+      document.querySelectorAll('.kku-accordion-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const content = btn.nextElementSibling;
+          const icon = btn.querySelector('svg');
+          const isHidden = content.style.maxHeight === '0px' || !content.style.maxHeight;
+          
+          document.querySelectorAll('.kku-accordion-content').forEach(c => { c.style.maxHeight = '0px'; c.style.paddingBottom = '0px'; });
+          document.querySelectorAll('.kku-accordion-btn svg').forEach(i => i.style.transform = 'rotate(0deg)');
+          
+          if (isHidden) {
+            content.style.maxHeight = content.scrollHeight + 40 + 'px';
+            content.style.paddingBottom = '20px';
+            icon.style.transform = 'rotate(180deg)';
+          }
+        });
+      });
+
+      // Sticky Header
+      const header = document.getElementById('mainHeader');
+      if (header) window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10));
+
+      // --- 2. Data Fetching (Home Logic) ---
+      function safeUpdate(elementId, value) {
+        const el = document.getElementById(elementId);
+        if (el) { el.innerHTML = value; el.classList.remove('skeleton'); }
+      }
+
+      try {
+        const [eventRes, donRes] = await Promise.allSettled([
+          Api.get('getEventInfo'),
+          Api.get('getDonationSummary')
+        ]);
+
+        // อัปเดตข้อมูลงานหลัก
+        if (eventRes.status === 'fulfilled' && eventRes.value) {
+          const d = eventRes.value;
+          safeUpdate('metaVenue', `จัดงานวันที่ ${d.eventDateText} ณ ${d.venue}`);
+          safeUpdate('eventSubtitle', `ประจำปีการศึกษา 2569 ${d.eventName}<br> ณ ${d.venue}`);
+          
+          safeUpdate('price_ching', d.prices.ching.toLocaleString());
+          safeUpdate('price_sathukan', d.prices.sathukan.toLocaleString());
+          safeUpdate('price_tra_hom_roeng', d.prices.tra_hom_roeng.toLocaleString());
+          safeUpdate('price_krabong_kan', d.prices.krabong_kan.toLocaleString());
+          safeUpdate('price_bat_sakunee', d.prices.bat_sakunee.toLocaleString());
+          safeUpdate('price_khan', d.prices.khan.toLocaleString());
+
+          const seatEl = document.getElementById('seatsStatusText');
+          if (seatEl) {
+            if (d.registrationOpen) {
+              seatEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-success-main animate-pulse"></span> เหลือที่นั่งว่างอีก <strong class="text-primary-dark">${d.seatsLeft ? d.seatsLeft.toLocaleString() : '---'}</strong> ที่ (จากทั้งหมด ${d.totalSeats ? d.totalSeats.toLocaleString() : '---'})`;
+            } else {
+              seatEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-error-main"></span> <strong class="text-error-main">ระบบปิดรับลงทะเบียนแล้ว</strong>`;
+              const btn = document.getElementById('btnRegisterHero');
+              if (btn) {
+                btn.className = "bg-slate-200 text-slate-400 text-base font-bold px-8 py-4 rounded-2xl w-full sm:w-auto pointer-events-none";
+                btn.textContent = 'ปิดรับลงทะเบียน';
+                btn.href = '#';
+              }
+              const chip = document.getElementById('registrationStatusChip');
+              if(chip) {
+                chip.textContent = 'ปิดระบบชั่วคราว';
+                chip.classList.replace('bg-primary-50', 'bg-error-light');
+                chip.classList.replace('text-primary-main', 'text-error-dark');
+                chip.classList.replace('border-primary-main/20', 'border-error-main/20');
+              }
+            }
+          }
+
+          safeUpdate('totalParticipants', `${d.totalRegisteredParticipants.toLocaleString()} <span class="text-base text-slate-400 font-medium">คน</span>`);
+        }
+
+        // อัปเดตยอดทำบุญ
+        if (donRes.status === 'fulfilled' && donRes.value) {
+          safeUpdate('totalDonationAmount', `${Number(donRes.value.totalAmount).toLocaleString()} <span class="text-base text-slate-400 font-medium">บาท</span>`);
+          safeUpdate('totalDonors', `${donRes.value.donorCount.toLocaleString()} <span class="text-base text-slate-400 font-medium">ท่าน</span>`);
+        }
+
+      } catch (error) {
+        console.error("Hydration Error:", error);
+      } finally {
+        // Remove Loaders
+        document.querySelectorAll('.skeleton').forEach(el => el.classList.remove('skeleton'));
+        document.body.classList.remove('is-loading');
+        const loader = document.getElementById('pageLoader');
+        if (loader) {
+          loader.classList.add('opacity-0');
+          setTimeout(() => loader.remove(), 500);
+        }
+        
+        // Animations
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+          });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in-up').forEach(el => observer.observe(el));
+      }
+    });
+  </script>
+</body>
+</html>

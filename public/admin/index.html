@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>แดชบอร์ดผู้ดูแลระบบ | พิธีไหว้ครูดนตรี</title>
+
+  <link rel="icon" href="../assets/FA-logo.svg" type="image/svg+xml">
+  <!-- อ้างอิงไฟล์สไตล์หลัก ถอยกลับ 1 โฟลเดอร์ -->
+  <link rel="stylesheet" href="../css/style.css" />
+  <!-- อ้างอิงไฟล์สไตล์เฉพาะของ Admin ในโฟลเดอร์ปัจจุบัน -->
+  <link rel="stylesheet" href="css/admin.css" />
+
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <!-- jsQR: pure-JS QR decoder used by the check-in camera scanner -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+</head>
+
+<body class="bg-slate-50">
+
+  <!-- ==========================================
+       LOGIN SCREEN
+       ========================================== -->
+  <div class="admin-login-wrap" id="loginWrap">
+    <div class="kku-card admin-login-card">
+      <img src="../assets/Main-logo.svg" alt="โลโก้" class="admin-login-logo" />
+      <h2 class="text-primary-dark mb-2">Admin Workspace</h2>
+      <p class="text-sm text-slate-500 mb-6">เข้าสู่ระบบเพื่อจัดการข้อมูลพิธีไหว้ครูดนตรี</p>
+
+      <div class="login-tabs">
+        <button class="login-tab-btn active" data-method="password" id="tabBtnPassword">Username / Password</button>
+        <button class="login-tab-btn" data-method="google" id="tabBtnGoogle">Google Workspace</button>
+      </div>
+
+      <form id="passwordLoginForm" class="login-method-panel">
+        <div class="form-group text-left">
+          <label class="form-label">ชื่อผู้ใช้ (Username)</label>
+          <input type="text" id="loginUsername" class="kku-input w-full" autocomplete="username" required />
+        </div>
+        <div class="form-group text-left mb-6">
+          <label class="form-label">รหัสผ่าน (Password)</label>
+          <input type="password" id="loginPassword" class="kku-input w-full" autocomplete="current-password" required />
+        </div>
+        <button type="submit" class="kku-btn kku-btn-primary kku-btn-large w-full"
+          id="passwordLoginBtn">เข้าสู่ระบบ</button>
+      </form>
+
+      <div class="login-method-panel hidden" id="googleLoginPanel">
+        <div class="center mt-4">
+          <div id="gsiButtonAdmin"></div>
+        </div>
+      </div>
+
+      <div id="loginAlert" class="mt-6"></div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       ADMIN SHELL (DASHBOARD)
+       ========================================== -->
+  <div class="admin-shell hidden" id="adminShell">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <img src="../assets/Main-logo.svg" alt="Logo" />
+        <div class="kku-brand-text">
+          <strong class="text-primary-dark">Admin Console</strong>
+          <span class="text-xs text-slate-500">ไหว้ครูดนตรี มข.</span>
+        </div>
+      </div>
+
+      <nav class="admin-nav">
+        <button class="admin-nav-btn" data-tab="overview" id="overviewTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+          </svg>
+          ภาพรวม (Overview)
+        </button>
+        <button class="admin-nav-btn" data-tab="checkin" id="checkinTabBtn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5zm-6 8h1.5v1.5H13V13zm1.5 1.5H16V16h-1.5v-1.5zM16 13h1.5v1.5H16V13zM13 16h1.5v1.5H13V16zm1.5 1.5H16V19h-1.5v-1.5zM16 16h1.5v1.5H16V16zm0 1.5h1.5V19H16v-1.5zM19 13h-1.5v1.5H19V13zm-1.5 3h1.5v1.5h-1.5V16zM19 19h-1.5v-1.5H19V19z" />
+          </svg>
+          เช็คอินหน้างาน (Check-in)
+        </button>
+        <button class="admin-nav-btn" data-tab="registrations" id="registrationsTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+          </svg>
+          ใบตอบรับ (Registrations)
+        </button>
+        <button class="admin-nav-btn" data-tab="donations" id="donationsTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z" />
+          </svg>
+          ยอดสมทบทุน (Donations)
+        </button>
+        <button class="admin-nav-btn" data-tab="seats" id="seatsTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M4 18v3h3v-3h10v3h3v-6H4v3zm15-8h3v3h-3v-3zM2 10h3v3H2v-3zm15 3H7V5c0-1.1.9-2 2-2h6c1.1 0 2 .9 2 2v8z" />
+          </svg>
+          ผังที่นั่ง (Seats)
+        </button>
+        <button class="admin-nav-btn" data-tab="admins" id="adminsTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+          </svg>
+          ผู้ดูแลระบบ (Admins)
+        </button>
+        <button class="admin-nav-btn" data-tab="config" id="configTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+          </svg>
+          ตั้งค่าระบบ (Config)
+        </button>
+        <button class="admin-nav-btn" data-tab="logs" id="logsTabBtn" data-superadmin-only="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path
+              d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z" />
+          </svg>
+          ประวัติการทำงาน (Logs)
+        </button>
+      </nav>
+
+      <div style="flex-grow: 1;"></div>
+
+      <div class="admin-sidebar-footer">
+        <button class="kku-btn kku-btn-text w-full justify-start text-sm" id="changePasswordBtn">🔑
+          เปลี่ยนรหัสผ่าน</button>
+        <button class="kku-btn kku-btn-outline w-full justify-center mt-2 border-error text-error"
+          id="logoutBtn">ออกจากระบบ</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+
+      <!-- Topbar -->
+      <header class="admin-topbar">
+        <h2 id="tabTitle" class="text-2xl font-bold m-0 text-slate-800">ภาพรวม (Overview)</h2>
+        <div class="admin-user-profile">
+          <div class="text-right hidden sm:block">
+            <div class="font-bold text-sm text-primary-dark" id="adminName">Loading...</div>
+            <div class="text-xs text-slate-500" id="adminRole">Role</div>
+          </div>
+          <div
+            class="w-10 h-10 bg-primary-light text-primary-main rounded-full flex items-center justify-center font-bold">
+            A</div>
+        </div>
+      </header>
+
+      <div class="admin-content-area">
+
+        <!-- 1. Overview -->
+        <section id="panel-overview">
+          <div class="kku-grid-3 mb-6" id="statGrid">
+            <!-- Injected by JS -->
+          </div>
+          <div class="kku-card bg-primary-light border-primary-light p-6">
+            <p class="text-sm text-primary-dark m-0 font-medium flex items-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+              </svg>
+              ข้อมูลทั้งหมดถูกซิงก์โดยตรงกับฐานข้อมูลใน Google Sheets การเปลี่ยนแปลงที่นี่จะอัปเดตแบบเรียลไทม์
+            </p>
+          </div>
+        </section>
+
+        <!-- 2. Check-in (staff + superadmin) -->
+        <section id="panel-checkin" class="hidden">
+          <div class="kku-grid-2" style="align-items:start;">
+
+            <div class="kku-card">
+              <h3 class="text-primary-dark mb-2">สแกน QR หน้างาน</h3>
+              <p class="text-sm text-slate-500 mb-4">ชี้กล้องไปที่ QR Code บนใบยืนยัน (PDF) ของผู้เข้าร่วม</p>
+
+              <div id="scannerWrap" class="scanner-wrap hidden">
+                <video id="scannerVideo" playsinline muted></video>
+                <div class="scanner-frame"></div>
+              </div>
+              <div id="scannerOff" class="scanner-off">
+                <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path
+                    d="M4 7V5a1 1 0 011-1h2M4 17v2a1 1 0 001 1h2M20 7V5a1 1 0 00-1-1h-2M20 17v2a1 1 0 01-1 1h-2M7 12h10" />
+                </svg>
+                <span>กล้องยังไม่เปิด</span>
+              </div>
+
+              <div class="flex gap-2 mt-4">
+                <button class="kku-btn kku-btn-primary w-full" id="btnStartScan">📷 เปิดกล้องสแกน</button>
+                <button class="kku-btn kku-btn-outline w-full hidden" id="btnStopScan">⏹ หยุดสแกน</button>
+              </div>
+              <p class="hint" id="scannerHint"></p>
+
+              <div class="border-b mt-6 mb-6"></div>
+
+              <h4 class="mb-2 text-sm font-semibold text-slate-700">กรอกรหัสด้วยตนเอง (กรณีสแกนไม่ได้)</h4>
+              <p class="hint mb-2">รหัสสำรองพิมพ์อยู่ใต้ QR ในใบยืนยัน PDF เป็นรูปแบบ "เลขที่อ้างอิง / โทเค็น"</p>
+              <form id="manualCheckinForm">
+                <div class="form-group">
+                  <label class="form-label">เลขที่อ้างอิง (Ref ID)</label>
+                  <input type="text" id="manualRegId" class="kku-input" placeholder="REG-XXXXXXXX" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">โทเค็น (Token)</label>
+                  <input type="text" id="manualToken" class="kku-input" placeholder="a1b2c3d4e5f6g7h8" required>
+                </div>
+                <button type="submit" class="kku-btn kku-btn-outline w-full">✓ เช็คอินด้วยรหัสนี้</button>
+              </form>
+            </div>
+
+            <div>
+              <div id="checkinResult" class="kku-card center" style="min-height:180px; justify-content:center;">
+                <p class="text-slate-400">ผลการเช็คอินจะแสดงที่นี่</p>
+              </div>
+
+              <div class="kku-card mt-6 p-0 overflow-hidden">
+                <div class="p-4 border-b bg-slate-50 font-semibold text-slate-700">ประวัติการสแกนล่าสุด (เซสชันนี้)
+                </div>
+                <div id="checkinHistory" class="table-responsive" style="max-height:320px; overflow-y:auto;">
+                  <p class="text-sm text-slate-400 p-4">ยังไม่มีการสแกนในเซสชันนี้</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 3. Registrations -->
+        <section id="panel-registrations" class="hidden">
+          <div class="kku-card p-0 overflow-hidden">
+            <div class="p-4 border-b border-glass-border flex flex-wrap justify-between items-center gap-4 bg-slate-50">
+              <input type="search" id="regSearch" class="kku-input w-full max-w-sm"
+                placeholder="🔍 ค้นหาชื่อ, สถาบัน, อีเมล..." />
+              <button class="kku-btn kku-btn-outline" id="exportRegBtn">📥 ส่งออก CSV</button>
+            </div>
+            <div class="table-responsive">
+              <table class="kku-table" id="regTable">
+                <thead>
+                  <tr>
+                    <th>Ref ID</th>
+                    <th>สถาบัน / หน่วยงาน</th>
+                    <th>ผู้ลงทะเบียน</th>
+                    <th>นร. / ครู</th>
+                    <th>ที่นั่ง</th>
+                    <th>ยอดเงิน (฿)</th>
+                    <th>สถานะ</th>
+                    <th>หน้างาน</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Donations -->
+        <section id="panel-donations" class="hidden">
+          <div class="kku-card p-0 overflow-hidden">
+            <div class="p-4 border-b border-glass-border flex flex-wrap justify-between items-center gap-4 bg-slate-50">
+              <input type="search" id="donSearch" class="kku-input w-full max-w-sm"
+                placeholder="🔍 ค้นหาชื่อผู้บริจาค..." />
+              <button class="kku-btn kku-btn-outline" id="exportDonBtn">📥 ส่งออก CSV</button>
+            </div>
+            <div class="table-responsive">
+              <table class="kku-table" id="donTable">
+                <thead>
+                  <tr>
+                    <th>Ref ID</th>
+                    <th>ผู้สมทบทุน</th>
+                    <th>ยอดเงิน (฿)</th>
+                    <th>ข้อมูลติดต่อ</th>
+                    <th>หลักฐาน</th>
+                    <th>สถานะ</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Seats -->
+        <section id="panel-seats" class="hidden">
+          <div class="kku-card">
+            <div class="flex items-center gap-6 mb-6 pb-4 border-b border-glass-border">
+              <div class="flex items-center gap-2"><span
+                  class="w-4 h-4 rounded bg-slate-100 border border-slate-300"></span> <span class="text-sm">ว่าง
+                  (Available)</span></div>
+              <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-primary-main text-white"></span>
+                <span class="text-sm">จองแล้ว (Reserved)</span></div>
+              <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-slate-800"></span> <span
+                  class="text-sm">บล็อก (Blocked)</span></div>
+            </div>
+            <div id="seatZones"></div>
+          </div>
+        </section>
+
+        <!-- 6. Admins -->
+        <section id="panel-admins" class="hidden">
+          <div class="kku-card p-0 overflow-hidden">
+            <div class="p-4 border-b border-glass-border flex justify-end bg-slate-50">
+              <button class="kku-btn kku-btn-primary" id="addAdminBtn">+ เพิ่มผู้ดูแลระบบ</button>
+            </div>
+            <div class="table-responsive">
+              <table class="kku-table" id="adminTable">
+                <thead>
+                  <tr>
+                    <th>อีเมล (Google)</th>
+                    <th>Username</th>
+                    <th>ชื่อ - สกุล</th>
+                    <th>ระดับสิทธิ์</th>
+                    <th>สถานะรหัสผ่าน</th>
+                    <th>เพิ่มเมื่อ</th>
+                    <th class="text-right">จัดการ</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7. Config (superadmin only) -->
+        <section id="panel-config" class="hidden">
+          <div class="kku-card mb-6" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <h3 class="text-primary-dark m-0">สถานะรับลงทะเบียน</h3>
+              <p class="text-sm text-slate-500 m-0">ปิดสวิตช์นี้เพื่อหยุดรับลงทะเบียนใหม่ทันที
+                (ใช้ที่นั่ง/ยอดเงินยังคงอยู่)</p>
+            </div>
+            <label class="kku-switch">
+              <input type="checkbox" id="cfgRegistrationOpen">
+              <span class="kku-switch-track"><span class="kku-switch-thumb"></span></span>
+            </label>
+          </div>
+
+          <div id="configAlert" class="mb-6"></div>
+
+          <form id="configForm">
+            <div class="kku-card mb-6">
+              <h4 class="mb-4 text-primary-dark border-b pb-2">ข้อมูลงาน</h4>
+              <div class="form-group"><label class="form-label">ชื่องาน (EVENT_NAME)</label><input class="kku-input"
+                  id="cfg_EVENT_NAME"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">วันที่จัดงาน (EVENT_DATE_TEXT)</label><input
+                    class="kku-input" id="cfg_EVENT_DATE_TEXT"></div>
+                <div class="form-group"><label class="form-label">วันปิดรับสมัคร (REG_DEADLINE)</label><input
+                    class="kku-input" id="cfg_REG_DEADLINE" placeholder="2569-07-20"></div>
+              </div>
+              <div class="form-group"><label class="form-label">สถานที่ (VENUE)</label><input class="kku-input"
+                  id="cfg_VENUE"></div>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">ผู้ประสานงาน (COORDINATOR_NAME)</label><input
+                    class="kku-input" id="cfg_COORDINATOR_NAME"></div>
+                <div class="form-group"><label class="form-label">อีเมลผู้ประสานงาน (COORDINATOR_EMAIL)</label><input
+                    class="kku-input" id="cfg_COORDINATOR_EMAIL"></div>
+              </div>
+            </div>
+
+            <div class="kku-card mb-6">
+              <h4 class="mb-4 text-primary-dark border-b pb-2">บัญชีรับโอนเงินทำบุญ</h4>
+              <div class="form-row">
+                <div class="form-group"><label class="form-label">ธนาคาร (BANK_NAME)</label><input class="kku-input"
+                    id="cfg_BANK_NAME"></div>
+                <div class="form-group"><label class="form-label">ชื่อบัญชี (BANK_ACCOUNT_NAME)</label><input
+                    class="kku-input" id="cfg_BANK_ACCOUNT_NAME"></div>
+              </div>
+              <div class="form-group"><label class="form-label">เลขที่บัญชี (BANK_ACCOUNT_NO)</label><input
+                  class="kku-input" id="cfg_BANK_ACCOUNT_NO"></div>
+            </div>
+
+            <div class="kku-card mb-6">
+              <h4 class="mb-4 text-primary-dark border-b pb-2">ที่นั่งและเงินกำนล (บาท/คน)</h4>
+              <div class="form-group"><label class="form-label">จำนวนที่นั่งทั้งหมด (TOTAL_SEATS)</label><input
+                  type="number" class="kku-input" id="cfg_TOTAL_SEATS"></div>
+              <p class="hint mb-2">การแก้ไขนี้เปลี่ยนแค่ตัวเลขอ้างอิง ไม่ได้เพิ่ม/ลดแถวในชีต Seats อัตโนมัติ —
+                เพิ่มที่นั่งจริงต้องไปเพิ่มแถวในชีต Seats เอง</p>
+              <div class="kku-grid-3">
+                <div class="form-group"><label class="form-label">ครอบฉิ่ง</label><input type="number" class="kku-input"
+                    id="cfg_PRICE_KHROB_CHING"></div>
+                <div class="form-group"><label class="form-label">สาธุการ</label><input type="number" class="kku-input"
+                    id="cfg_PRICE_SATHUKAN"></div>
+                <div class="form-group"><label class="form-label">ตระโหมโรง</label><input type="number"
+                    class="kku-input" id="cfg_PRICE_TRA_HOM_ROENG"></div>
+                <div class="form-group"><label class="form-label">กระบองกัน</label><input type="number"
+                    class="kku-input" id="cfg_PRICE_KRABONG_KAN"></div>
+                <div class="form-group"><label class="form-label">บาทสกุณี</label><input type="number" class="kku-input"
+                    id="cfg_PRICE_BAT_SAKUNEE"></div>
+                <div class="form-group"><label class="form-label">ขันไหว้ครู</label><input type="number"
+                    class="kku-input" id="cfg_PRICE_KHAN_WAI_KHRU"></div>
+              </div>
+            </div>
+
+            <details class="kku-card mb-6">
+              <summary class="text-primary-dark font-semibold" style="cursor:pointer;">ค่าขั้นสูง
+                (แก้ด้วยความระมัดระวัง)</summary>
+              <div class="mt-4">
+                <div class="form-group"><label class="form-label">Google OAuth Client ID</label><input class="kku-input"
+                    id="cfg_GOOGLE_CLIENT_ID"></div>
+                <div class="form-row">
+                  <div class="form-group"><label class="form-label">Drive Folder: สลิปโอนเงิน</label><input
+                      class="kku-input" id="cfg_DRIVE_FOLDER_SLIPS_ID"></div>
+                  <div class="form-group"><label class="form-label">Drive Folder: PDF ใบยืนยัน</label><input
+                      class="kku-input" id="cfg_DRIVE_FOLDER_PDF_ID"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Logo File ID</label><input class="kku-input"
+                    id="cfg_LOGO_FILE_ID"></div>
+              </div>
+            </details>
+
+            <button type="submit" class="kku-btn kku-btn-primary kku-btn-large w-full"
+              id="btnSaveConfig">บันทึกการตั้งค่าทั้งหมด</button>
+          </form>
+        </section>
+
+        <!-- 8. Logs (superadmin only) -->
+        <section id="panel-logs" class="hidden">
+          <div class="kku-card p-0 overflow-hidden">
+            <div class="p-4 border-b border-glass-border flex justify-between items-center gap-4 bg-slate-50">
+              <input type="search" id="logSearch" class="kku-input w-full max-w-sm"
+                placeholder="🔍 ค้นหาผู้ดำเนินการ หรือ การกระทำ..." />
+              <button class="kku-btn kku-btn-outline" id="refreshLogsBtn">🔄 รีเฟรช</button>
+            </div>
+            <div class="table-responsive">
+              <table class="kku-table" id="logTable">
+                <thead>
+                  <tr>
+                    <th>เวลา</th>
+                    <th>ผู้ดำเนินการ</th>
+                    <th>การกระทำ</th>
+                    <th>รายละเอียด</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================
+       MODAL OVERLAY
+       ========================================== -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="kku-card modal-box" id="modalBox">
+      <!-- Content injected via JS -->
+    </div>
+  </div>
+
+  <!-- อ้างอิงสคริปต์หลัก ถอยกลับ 1 โฟลเดอร์ -->
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/auth.js"></script>
+  <!-- สคริปต์แอดมินอยู่ในโฟลเดอร์ปัจจุบัน -->
+  <script src="js/admin.js"></script>
+</body>
+
+</html>

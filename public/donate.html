@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ร่วมสมทบเงินโครงการ | พิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ</title>
+  <meta name="description" content="ร่วมทำบุญและสมทบทุนจัดงานพิธีไหว้ครูดนตรี คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น">
+  <link rel="icon" href="assets/FA-logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Google Sans', 'Kanit', 'sans-serif'] },
+          colors: {
+            primary: { main: '#a77924', hover: '#75601a', light: 'rgba(167, 59, 36, 0.08)', dark: '#614112' },
+            gold: { 100: '#fbf6ea', 500: '#d4af37', ink: '#8b6f32' }
+          },
+          boxShadow: {
+            'mui': '0 0 0 1px rgba(15,23,42,0.04), 0 14px 34px -22px rgba(15,23,42,0.12), 0 28px 72px -40px rgba(15,23,42,0.14)',
+            'mui-sm': '0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="is-loading bg-slate-50 flex flex-col min-h-screen relative antialiased">
+
+  <!-- ==========================================
+       PAGE LOADER
+       ========================================== -->
+  <div
+    class="fixed inset-0 z-[9999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-500"
+    id="pageLoader">
+    <div class="w-12 h-12 border-4 border-slate-200 border-t-primary-main rounded-full animate-spin"></div>
+    <div class="mt-6 font-bold text-slate-700 text-sm tracking-wide">
+      กำลังเตรียมข้อมูล...
+    </div>
+  </div>
+
+  <!-- ==========================================
+       TOP NAVIGATION (KKU 63 STYLE - PILLED HEADER)
+       ========================================== -->
+  <div class="fixed top-4 inset-x-4 z-50 pointer-events-none">
+    <div class="max-w-7xl mx-auto pointer-events-auto">
+      <header
+        class="bg-white/95 backdrop-blur-md border border-slate-200 rounded-[20px] shadow-sm p-3 flex items-center justify-between transition-all duration-300"
+        id="mainHeader">
+
+        <!-- Left: Hamburger & Logo -->
+        <div class="flex items-center gap-4">
+          <button
+            class="xl:hidden w-10 h-10 flex items-center justify-center border border-slate-200 rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition-colors"
+            id="navToggle" aria-label="เปิดเมนู">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <a href="index.html" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <img src="assets/Main-logo.svg" alt="โลโก้" style="width: 90px;" class="object-contain">
+          </a>
+        </div>
+
+        <!-- Center: Nav Pill (Desktop) -->
+        <nav class="hidden xl:flex items-center bg-slate-50/80 p-1.5 rounded-2xl border border-slate-100 shadow-inner">
+          <a href="index.html"
+            class="px-5 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 transition-all nav-link">หน้าแรก</a>
+          <a href="index.html#schedule"
+            class="px-5 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 transition-all nav-link">กำหนดการ</a>
+          <a href="index.html#khrob"
+            class="px-5 py-2 rounded-xl text-sm font-bold text-slate-500 hover:text-slate-900 transition-all nav-link">การครอบครู</a>
+          <a href="donate.html"
+            class="px-5 py-2 rounded-xl text-sm font-bold bg-white text-slate-900 shadow-sm border border-slate-100 transition-all">ร่วมสมทบเงิน</a>
+        </nav>
+
+        <!-- Right: CTA -->
+        <div>
+          <a href="register.html"
+            class="bg-primary-main hover:bg-primary-dark text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center justify-center tracking-wide">
+            ลงทะเบียนเข้าร่วม
+          </a>
+        </div>
+
+      </header>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       MOBILE MENU OVERLAY
+       ========================================== -->
+  <div
+    class="fixed inset-x-4 top-24 z-40 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-xl p-6 transition-all duration-300 opacity-0 pointer-events-none -translate-y-4"
+    id="mobileMenu">
+    <nav class="flex flex-col gap-4">
+      <a href="index.html"
+        class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mobile-link">หน้าแรก</a>
+      <a href="index.html#schedule"
+        class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mobile-link">กำหนดการ</a>
+      <a href="index.html#khrob"
+        class="text-base font-bold text-slate-900 border-b border-slate-100 pb-3 mobile-link">การครอบครู</a>
+      <a href="donate.html"
+        class="text-base font-bold text-primary-main border-b border-slate-100 pb-3 mobile-link">ร่วมสมทบเงิน</a>
+      <a href="register.html"
+        class="bg-primary-main hover:bg-primary-dark text-white text-white font-bold py-3 rounded-xl text-center mt-2">ลงทะเบียนเข้าร่วม</a>
+    </nav>
+  </div>
+
+  <!-- ==========================================
+       MAIN CONTENT
+       ========================================== -->
+  <main class="flex-grow pt-32 pb-16 px-4 relative overflow-hidden">
+
+    <!-- Background Decor -->
+    <div
+      class="absolute top-0 right-0 w-96 h-96 bg-primary-light rounded-full blur-3xl opacity-40 pointer-events-none -z-10">
+    </div>
+    <div
+      class="absolute bottom-0 left-0 w-96 h-96 bg-gold-100 rounded-full blur-3xl opacity-40 pointer-events-none -z-10">
+    </div>
+
+    <div class="max-w-6xl mx-auto">
+
+      <!-- Page Header -->
+      <div class="text-center mb-10 fade-in-up">
+        <span class="text-xs font-bold tracking-widest text-primary-main uppercase mb-2 block">Donation</span>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 m-0 tracking-tight">ร่วมสมทบเงินโครงการ</h1>
+        <p class="text-slate-500 mt-3 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
+          รายได้ทั้งหมดนำไปจัดเตรียมพานบายศรีและสถานที่
+          ทุกยอดบริจาคจะถูกบันทึกเพื่อนำไปรวมยอดประกาศอนุโมทนาบัตรอย่างเป็นทางการในวันงาน
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-12 gap-8 items-start fade-in-up delay-100">
+
+        <!-- ==========================================
+             COLUMN 1: BANK DETAILS
+             ========================================== -->
+        <div
+          class="lg:col-span-5 bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-sm relative overflow-hidden">
+          <div class="absolute -right-10 -top-10 w-32 h-32 bg-slate-100 rounded-full blur-2xl pointer-events-none">
+          </div>
+          <div class="relative z-10 space-y-6 text-center">
+            <div class="space-y-3">
+              <h3 class="text-slate-900 text-2xl font-extrabold">บัญชีรับโอนอย่างเป็นทางการ</h3>
+              <p class="text-sm text-slate-500 leading-relaxed max-w-lg mx-auto">สแกน QR Code ด้านล่าง
+                หรือใช้ข้อมูลบัญชีด้านล่างเพื่อโอนเงินเข้าสมทบโครงการ</p>
+            </div>
+          </div>
+
+          <div class="mt-8 bg-slate-50 p-6 rounded-3xl border border-slate-200 shadow-inner relative z-10">
+            <div class="grid gap-4 text-sm text-slate-600">
+              <div class="grid grid-cols-[1fr_auto] gap-4 items-center">
+                <span class="font-medium">ธนาคาร</span>
+                <strong id="uiBankName"
+                  class="skeleton inline-block w-30 rounded-md text-slate-900 font-semibold text-right"></strong>
+              </div>
+              <div class="grid grid-cols-[1fr_auto] gap-4 items-center">
+                <span class="font-medium">ชื่อบัญชี</span>
+                <strong id="uiAccountName"
+                  class="skeleton inline-block w-36 rounded-md text-slate-900 font-bold text-right"></strong>
+              </div>
+              <div class="grid grid-cols-[1fr_auto] gap-4 items-center">
+                <span class="font-medium">เลขที่บัญชี</span>
+                <strong id="uiAccountNo"
+                  class="text-xl sm:text-xl font-extrabold text-primary-main skeleton w-38 rounded-md text-right"></strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 relative z-10">
+            <div class="rounded-[32px] overflow-hidden border border-slate-200 shadow-sm">
+              <img src="assets/donation-qr-scb.png" alt="QR Code SCB" class="w-full h-auto object-cover"
+                onerror="this.onerror=null; this.src='https://via.placeholder.com/300x300?text=QR+Code';">
+            </div>
+            <p class="mt-4 text-xs text-slate-400 font-medium text-center">สแกน QR Code ผ่านแอปพลิเคชันธนาคารของท่าน</p>
+          </div>
+        </div>
+
+        <!-- ==========================================
+             COLUMN 2: UPLOAD FORM
+             ========================================== -->
+        <div class="lg:col-span-7 bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-md">
+          <h3 class="mb-6 text-slate-800 text-lg font-extrabold border-b border-slate-100 pb-4 flex items-center gap-2">
+            <span
+              class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm shadow-sm">
+              <i class="fa-solid fa-money-check"></i>
+            </span>
+            แจ้งหลักฐานการโอนเงิน
+          </h3>
+
+          <div id="donateAlert" aria-live="polite"></div>
+
+          <form id="donateForm">
+            <div class="form-group mb-5">
+              <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2"
+                for="donName">นามผู้บริจาค <span class="text-error-main">*</span></label>
+              <input type="text" id="donName"
+                class="kku-input w-full p-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white transition-colors"
+                placeholder="นายศรัทธา ดนตรีไทย" required>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
+              <div class="form-group m-0">
+                <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2"
+                  for="donPhone">เบอร์ติดต่อ</label>
+                <input type="tel" id="donPhone"
+                  class="kku-input w-full p-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white transition-colors"
+                  placeholder="08X-XXX-XXXX">
+              </div>
+              <div class="form-group m-0">
+                <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2" for="donEmail">อีเมล
+                  (ถ้ามี)</label>
+                <input type="email" id="donEmail"
+                  class="kku-input w-full p-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white transition-colors"
+                  placeholder="email@example.com">
+              </div>
+            </div>
+
+            <div class="form-group mb-5">
+              <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2"
+                for="donAmount">จำนวนเงินที่โอน (บาท) <span class="text-error-main">*</span></label>
+              <div class="relative">
+                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">฿</span>
+                <input type="number" id="donAmount"
+                  class="kku-input w-full pl-10 p-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white transition-colors font-bold text-primary-dark text-xl"
+                  min="1" step="0.01" placeholder="0.00" style="padding-left: 32px;" required>
+              </div>
+            </div>
+
+            <div class="form-group mb-5">
+              <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2"
+                for="donNote">หมายเหตุ</label>
+              <textarea id="donNote"
+                class="kku-input w-full p-3.5 rounded-xl border border-slate-300 bg-slate-50 focus:bg-white transition-colors min-h-[80px] resize-y"
+                rows="2"></textarea>
+            </div>
+
+            <div class="form-group mb-8">
+              <label class="form-label text-sm sm:text-base font-bold text-slate-700 block mb-2">แนบรูปภาพสลิป <span
+                  class="text-error-main">*</span></label>
+
+              <!-- Interactive File Dropzone -->
+              <div
+                class="file-drop-zone bg-slate-50 border-2 border-dashed border-slate-300 hover:border-primary-main hover:bg-primary-light transition-all p-8 rounded-2xl text-center cursor-pointer group"
+                id="slipDropzone" tabindex="0" role="button" aria-label="คลิกเพื่อเลือกไฟล์สลิป">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  class="mx-auto mb-3 text-slate-400 group-hover:text-primary-main transition-colors">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                </svg>
+                <p id="slipText"
+                  class="text-sm sm:text-base font-bold text-slate-700 group-hover:text-primary-main transition-colors m-0">
+                  คลิกที่นี่เพื่อเลือกไฟล์สลิป</p>
+                <p class="text-xs text-slate-500 mt-2 m-0 font-medium">รองรับ JPEG / PNG ขนาดไม่เกิน 5MB</p>
+
+                <!-- Preview Image -->
+                <img id="slipPreview" src="" alt="Preview"
+                  class="hidden mt-6 mx-auto max-h-56 rounded-xl shadow-sm border border-slate-200 object-contain">
+              </div>
+              <!-- Hidden Input -->
+              <input type="file" id="slipInput" accept="image/jpeg, image/png, image/jpg" class="hidden" required
+                aria-hidden="true">
+            </div>
+
+            <button type="submit" id="btnSubmitDonate"
+              class="bg-primary-main hover:bg-primary-dark text-white text-base font-bold px-8 py-4 rounded-2xl transition-all shadow-md hover:-translate-y-1 w-full flex items-center justify-center gap-2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+              ยืนยันการแจ้งโอนเงิน
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="w-full bg-white border-t border-slate-200 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <img src="assets/KKU-main.svg" alt="KKU" class="h-8">
+        <img src="assets/FA-logo.svg" alt="FA" class="h-8">
+      </div>
+      <p class="text-xs text-slate-500 m-0 text-center md:text-right font-medium">
+        &copy; 2569 คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น<br>
+        ระบบจัดการการร่วมสมทบทุนโครงการ
+      </p>
+    </div>
+  </footer>
+
+  <!-- ==========================================
+       JAVASCRIPT ARCHITECTURE
+       ========================================== -->
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/donate.js"></script>
+</body>
+
+</html>

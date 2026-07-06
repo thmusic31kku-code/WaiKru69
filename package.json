@@ -1,0 +1,14 @@
+{
+  "name": "wai-khru-dontri-website",
+  "version": "1.0.0",
+  "private": true,
+  "description": "เว็บไซต์พิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ มหาวิทยาลัยขอนแก่น (static site + Google Apps Script API)",
+  "scripts": {
+    "dev": "live-server public --port=3000 --no-browser=false --wait=200",
+    "start": "npm run dev",
+    "build": "echo 'ไม่มีขั้นตอน build เพิ่มเติม — เป็น static site ล้วน ใช้โฟลเดอร์ public/ deploy ได้ทันที'"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

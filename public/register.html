@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="th" class="scroll-smooth">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ลงทะเบียน & เข้าสู่ระบบ | พิธีไหว้ครูดนตรี</title>
+
+  <link rel="icon" href="assets/FA-logo.svg" type="image/svg+xml">
+
+  <!-- โหลด Google Fonts -->
+  <link rel="stylesheet" href="css/style.css">
+  <!-- โหลด Tailwind CSS ผ่าน CDN เพื่อควบคุม UI ให้สมบูรณ์แบบ 100% -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Google Sans', 'Kanit', 'sans-serif'] },
+          colors: {
+            primary: { main: '#a77924', hover: '#75601a', light: 'rgba(167, 59, 36, 0.08)', dark: '#614112' },
+            gold: { 100: '#fbf6ea', 500: '#d4af37', ink: '#8b6f32' }
+          },
+          boxShadow: {
+            'mui': '0 0 0 1px rgba(15,23,42,0.04), 0 14px 34px -22px rgba(15,23,42,0.12), 0 28px 72px -40px rgba(15,23,42,0.14)',
+            'mui-sm': '0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    
+    body {
+      background-color: #f8fafc;
+    }
+
+    .kku-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #0f172a;
+      font-size: 1rem;
+      transition: all 0.2s;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .kku-input:focus {
+      outline: none;
+      border-color: var(--primary-main);
+      box-shadow: 0 0 0 4px rgba(167, 59, 36, 0.15);
+    }
+
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 4px solid #e2e8f0;
+      border-top-color: #a73b24;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .fade-enter {
+      animation: fade-in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    @keyframes fade-in-up {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+  <!-- Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+
+<body class="antialiased min-h-screen flex flex-col relative">
+
+  <div id="pageLoader"
+    class="fixed inset-0 z-[9999] bg-slate-50 flex flex-col items-center justify-center transition-opacity duration-300">
+    <div class="spinner"></div>
+    <div class="mt-6 text-sm font-bold text-slate-600">กำลังเตรียมระบบลงทะเบียน...</div>
+  </div>
+
+  <div class="absolute top-6 left-6 z-50">
+    <a href="index.html"
+      class="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 rounded-xl shadow-sm text-slate-600 font-semibold text-sm hover:text-primary-main hover:bg-slate-50 transition-all">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+        stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      กลับหน้าหลัก
+    </a>
+  </div>
+
+  <main class="flex-grow flex items-center justify-center p-4 py-24 relative overflow-hidden">
+    <!-- Abstract Background Orbs -->
+    <div
+      class="absolute top-10 left-10 w-96 h-96 bg-primary-light rounded-full blur-[80px] opacity-60 -z-10 pointer-events-none">
+    </div>
+    <div
+      class="absolute bottom-10 right-10 w-96 h-96 bg-gold-100 rounded-full blur-[80px] opacity-60 -z-10 pointer-events-none">
+    </div>
+
+    <div class="w-full max-w-4xl mx-auto">
+
+      <!-- ==========================================
+           VIEW 1: SIGNED OUT (CENTERED CARD)
+           ========================================== -->
+      <div id="authSignedOut"
+        class="w-full max-w-md mx-auto bg-white/80 backdrop-blur-xl rounded-[24px] shadow-mui p-10 sm:p-12 text-center fade-enter border border-white">
+        <div
+          class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-slate-200 shadow-inner rotate-3">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            class="text-primary-main -rotate-3">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">เข้าสู่ระบบ</h1>
+        <p class="text-sm text-slate-500 mb-8 leading-relaxed">
+          ระบบลงทะเบียนและสำรองที่นั่ง<br>กรุณาเข้าสู่ระบบด้วยบัญชี Google เพื่อดำเนินการต่อ
+        </p>
+
+        <div id="authAlertBox"></div>
+
+        <!-- Google SignIn Container -->
+        <div id="gsiContainer" class="flex justify-center w-full min-h-[44px] mb-8"></div>
+
+        <div class="pt-6 border-t border-slate-100 text-left">
+          <p class="text-xs text-slate-400 leading-relaxed text-center">
+            ระบบนี้ไม่มีการเข้าถึงข้อมูลรหัสผ่าน การเข้าสู่ระบบถือว่าท่านยอมรับ <a href="#"
+              class="text-primary-main hover:underline">นโยบายความเป็นส่วนตัว</a> และ <a href="#"
+              class="text-primary-main hover:underline">ข้อกำหนดการใช้งาน</a>
+          </p>
+        </div>
+      </div>
+
+      <div id="formAlert" class="max-w-3xl mx-auto mb-6" aria-live="polite"></div>
+
+      <!-- ==========================================
+           VIEW 2: SIGNED IN CONTENT
+           ========================================== -->
+      <div id="authSignedIn" class="hidden w-full transition-all duration-500">
+
+        <!-- User Profile Chip -->
+        <div
+          class="bg-white/80 backdrop-blur-md rounded-full shadow-mui-sm border border-slate-200 p-2 pr-4 mb-8 flex justify-between items-center max-w-2xl mx-auto fade-enter">
+          <div class="flex items-center gap-3">
+            <img id="userAvatar" src="" alt="Profile"
+              class="w-10 h-10 rounded-full border border-slate-200 object-cover shadow-sm">
+            <div class="flex flex-col">
+              <strong id="userName" class="text-slate-900 text-sm leading-tight font-bold"></strong>
+              <span id="userEmail" class="text-xs text-slate-500"></span>
+            </div>
+          </div>
+          <button
+            class="text-xs font-bold text-slate-600 hover:text-error-main bg-slate-100 hover:bg-error-light px-4 py-2 rounded-full transition-colors"
+            onclick="RegApp.signOut()">
+            ออกจากระบบ
+          </button>
+        </div>
+
+        <div id="globalAlert" class="max-w-3xl mx-auto" aria-live="polite"></div>
+
+        <!-- SUCCESS TICKET VIEW -->
+        <div id="ticketView"
+          class="hidden bg-white/90 backdrop-blur-xl rounded-[32px] shadow-mui border border-slate-100 text-center py-16 px-6 sm:px-12 max-w-2xl mx-auto relative overflow-hidden fade-enter">
+          <div
+            class="absolute right-0 top-0 w-64 h-64 bg-success-light opacity-30 rounded-full blur-3xl pointer-events-none -z-10">
+          </div>
+
+          <div
+            class="w-20 h-20 bg-success-main text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg border-4 border-success-light">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="text-slate-900 text-3xl font-extrabold mb-3">ท่านมีที่นั่งในระบบเรียบร้อยแล้ว</h2>
+          <p class="text-slate-600 text-base mb-10 font-medium">ข้อมูลการลงทะเบียนของท่านถูกบันทึกเข้าระบบส่วนกลางสำเร็จ
+          </p>
+
+          <div class="bg-slate-50 p-6 sm:p-8 rounded-2xl text-left border border-slate-200 mb-10 shadow-sm">
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
+              <span class="text-slate-500 text-sm font-medium">รหัสอ้างอิง (Ref ID)</span>
+              <strong id="tvId"
+                class="text-slate-900 font-bold bg-white border border-slate-200 px-3 py-1.5 rounded-lg shadow-sm text-sm tracking-widest uppercase"></strong>
+            </div>
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-200">
+              <span class="text-slate-500 text-sm font-medium">ผู้เข้าร่วมรวม</span>
+              <strong id="tvCount" class="text-slate-900 font-extrabold text-xl"></strong>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 text-sm font-medium">สถานะ</span>
+              <strong
+                class="text-success-dark flex items-center gap-2 text-sm bg-success-light border border-success-main/20 px-3 py-1.5 rounded-full shadow-sm">
+                <span class="w-2 h-2 rounded-full bg-success-main"></span> ยืนยันที่นั่งแล้ว
+              </strong>
+            </div>
+          </div>
+
+          <a id="tvPdfBtn" href="#" target="_blank"
+            class="inline-flex items-center justify-center gap-2 bg-primary-main hover:bg-primary-hover text-white text-base font-bold px-8 py-4 rounded-xl transition-all shadow-md hover:-translate-y-1 w-full max-w-sm">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />
+            </svg>
+            ดาวน์โหลด E-Ticket (PDF)
+          </a>
+        </div>
+
+        <!-- REGISTRATION FORM (Bento Box) -->
+        <form id="regForm"
+          class="bg-white/95 backdrop-blur-xl rounded-[32px] shadow-mui border border-slate-100 p-8 sm:p-12 hidden fade-enter relative overflow-hidden">
+
+          <div class="mb-12 text-center">
+            <span class="text-xs font-bold tracking-widest text-primary-main uppercase mb-2 block">Onboarding</span>
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 m-0">แบบฟอร์มตอบรับเข้าร่วม</h2>
+            <p class="text-slate-500 text-base mt-3 max-w-lg mx-auto">ระบุรายละเอียดการสำรองที่นั่ง
+              ระบบจะประมวลผลและสร้าง E-Ticket ให้ท่านทันทีหลังบันทึกข้อมูล</p>
+          </div>
+
+          <!-- Section 1 -->
+          <div class="mb-12">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-6 flex items-center gap-3">
+              <span
+                class="w-7 h-7 rounded-md bg-slate-800 text-white flex items-center justify-center text-xs shadow-sm">1</span>
+              ข้อมูลสถาบันและการติดต่อ
+            </h3>
+            <div class="mb-5">
+              <label class="block font-bold text-sm text-slate-700 mb-2" for="regInstitution">สถาบัน / โรงเรียน /
+                หน่วยงาน <span class="text-error-main">*</span></label>
+              <input type="text" id="regInstitution" class="kku-input" placeholder="ระบุชื่อเต็มหน่วยงานของท่าน"
+                required>
+            </div>
+            <div class="mb-5">
+              <label class="block font-bold text-sm text-slate-700 mb-2" for="regAddress">ที่อยู่สถาบัน (สังเขป)</label>
+              <input type="text" id="regAddress" class="kku-input" placeholder="เช่น อ.เมือง จ.ขอนแก่น">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div><label class="block font-bold text-sm text-slate-700 mb-2" for="regCoordinator">ผู้ประสานงานหลัก
+                  <span class="text-error-main">*</span></label><input type="text" id="regCoordinator" class="kku-input"
+                  placeholder="ชื่อ-นามสกุล" required></div>
+              <div><label class="block font-bold text-sm text-slate-700 mb-2" for="regPhone">เบอร์ติดต่อ <span
+                    class="text-error-main">*</span></label><input type="tel" id="regPhone" class="kku-input"
+                  placeholder="08X-XXX-XXXX" required></div>
+            </div>
+          </div>
+
+          <!-- Section 2 -->
+          <div class="mb-12">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-6 flex items-center gap-3">
+              <span
+                class="w-7 h-7 rounded-md bg-slate-800 text-white flex items-center justify-center text-xs shadow-sm">2</span>
+              จำนวนผู้เข้าร่วมเพื่อสำรองที่นั่ง
+            </h3>
+            <div
+              class="bg-info-light border border-info-main/20 p-4 rounded-xl mb-6 flex gap-3 items-start text-info-main">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="mt-0.5 flex-shrink-0">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <p class="text-sm m-0 leading-relaxed text-slate-700">ระบบจะทำการจองพื้นที่อัตโนมัติตาม
+                <strong>"จำนวนคนรวมทั้งหมด"</strong> (หากโควตาระบบเต็ม จะไม่สามารถกรอกข้อมูลได้)</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block font-bold text-sm text-slate-700 mb-2 text-center" for="regStudents">นักเรียน /
+                  นักศึกษา (คน) <span class="text-error-main">*</span></label>
+                <input type="number" id="regStudents"
+                  class="kku-input text-center text-3xl h-20 font-extrabold text-primary-dark bg-slate-50" min="0"
+                  value="0" required>
+              </div>
+              <div>
+                <label class="block font-bold text-sm text-slate-700 mb-2 text-center" for="regTeachers">ครู / อาจารย์
+                  (คน) <span class="text-error-main">*</span></label>
+                <input type="number" id="regTeachers"
+                  class="kku-input text-center text-3xl h-20 font-extrabold text-slate-800 bg-slate-50" min="0"
+                  value="0" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3 -->
+          <div class="mb-8">
+            <h3 class="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3 mb-6 flex items-center gap-3">
+              <span
+                class="w-7 h-7 rounded-md bg-slate-800 text-white flex items-center justify-center text-xs shadow-sm">3</span>
+              ประสงค์เข้าร่วมพิธีครอบครู
+            </h3>
+            <p class="text-sm text-slate-500 mb-6">
+              ระบุ <strong>"จำนวนคน"</strong> ในแต่ละประเภท (ยอดเงินกำนลรวมด้านล่างจะบวกค่าขันไหว้ครู 59
+              บาท/รายการไว้ให้อัตโนมัติ)
+            </p>
+
+            <div id="dynamicKhrobList"
+              class="mb-8 border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm">
+              <div class="text-center text-slate-400 py-10 text-sm">กำลังโหลดข้อมูลราคา...</div>
+            </div>
+
+            <!-- Grand Total Box -->
+            <div
+              class="bg-slate-900 p-8 rounded-3xl flex flex-col sm:flex-row justify-between items-center shadow-xl relative overflow-hidden">
+              <div
+                class="absolute -right-10 -top-10 w-48 h-48 bg-primary-main opacity-20 rounded-full blur-3xl pointer-events-none">
+              </div>
+              <div class="mb-4 sm:mb-0 relative z-10 text-center sm:text-left">
+                <strong class="text-white text-lg block tracking-wide">ยอดเงินกำนลโดยประมาณ</strong>
+                <span
+                  class="text-xs text-slate-300 font-medium bg-white/10 border border-white/10 inline-block px-3 py-1.5 rounded-full mt-2">รวมค่าขันไหว้ครูแล้ว</span>
+              </div>
+              <div class="text-4xl sm:text-5xl font-extrabold text-gold-500 flex items-baseline gap-2 relative z-10"
+                id="uiTotalAmount">
+                0 <span class="text-base font-medium text-slate-400">บาท</span>
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="btnSubmitReg"
+            class="inline-flex items-center justify-center gap-2 bg-primary-main hover:bg-primary-hover text-white text-lg font-bold px-8 py-4 rounded-xl transition-all shadow-md hover:-translate-y-1 w-full mt-8">
+            บันทึกข้อมูล & สร้าง E-Ticket
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-8 text-center text-sm text-slate-500 mt-auto">
+    <div class="max-w-7xl mx-auto px-4">
+      &copy; 2569 คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น
+    </div>
+  </footer>
+
+  <script src="js/config.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    /**
+     * ระบบลงทะเบียน & ยืนยันตัวตนผ่าน Google Identity Services (GIS)
+     * ถูกเขียนเพื่อทำงานภายในไฟล์เดียวร่วมกับ API
+     */
+    const RegApp = (function () {
+
+      const state = {
+        config: null,
+        user: null,
+        idToken: null,
+        isSubmitting: false,
+        khrob: { ching: 0, sathukan: 0, tra_hom_roeng: 0, krabong_kan: 0, bat_sakunee: 0 }
+      };
+
+      const KHROB_META = [
+        { k: 'ching', l: 'ครอบฉิ่ง' },
+        { k: 'sathukan', l: 'สาธุการ' },
+        { k: 'tra_hom_roeng', l: 'ตระโหมโรง' },
+        { k: 'krabong_kan', l: 'กระบองกัน' },
+        { k: 'bat_sakunee', l: 'บาทสกุณี' }
+      ];
+
+      const els = {
+        loader: document.getElementById('pageLoader'),
+        outView: document.getElementById('authSignedOut'),
+        inView: document.getElementById('authSignedIn'),
+        form: document.getElementById('regForm'),
+        ticketView: document.getElementById('ticketView'),
+        authAlert: document.getElementById('authAlertBox'),
+        globalAlert: document.getElementById('globalAlert'),
+        alert: document.getElementById('globalAlert'),
+        kList: document.getElementById('dynamicKhrobList'),
+        total: document.getElementById('uiTotalAmount'),
+        sCount: document.getElementById('regStudents'),
+        tCount: document.getElementById('regTeachers'),
+        btn: document.getElementById('btnSubmitReg')
+      };
+
+      async function init() {
+        try {
+          state.config = await Api.get('getEventInfo');
+
+          if (!state.config.registrationOpen) {
+            els.outView.innerHTML = `
+              <div class="text-error-main mb-6"><svg class="w-20 h-20 mx-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg></div>
+              <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">ปิดรับลงทะเบียนชั่วคราว</h2>
+              <p class="text-slate-500 text-sm max-w-sm mx-auto mb-8">ขออภัย ขณะนี้ระบบได้ทำการปิดรับการสำรองที่นั่งแล้ว หากท่านมีข้อสงสัยกรุณาติดต่อผู้ประสานงาน</p>
+            `;
+          } else {
+            renderKhrobUI();
+            initGoogleAuth();
+          }
+        } catch (e) {
+          els.outView.innerHTML = `
+            <div class="bg-error-light text-error-dark border border-error-main p-6 rounded-2xl text-left mb-0">
+              <strong class="block mb-2 text-lg">ไม่สามารถเชื่อมต่อฐานข้อมูลได้</strong>
+              <span class="text-sm">${e.message}</span><br>
+              <button class="px-4 py-2 bg-error-main text-white rounded-lg mt-4 text-sm font-bold w-full" onclick="location.reload()">ลองใหม่อีกครั้ง</button>
+            </div>`;
+        } finally {
+          els.loader.classList.add('opacity-0');
+          setTimeout(() => els.loader.remove(), 400);
+        }
+      }
+
+      function initGoogleAuth() {
+        const waitGSI = setInterval(() => {
+          if (window.google && window.google.accounts) {
+            clearInterval(waitGSI);
+            google.accounts.id.initialize({
+              client_id: window.APP_CONFIG.GOOGLE_CLIENT_ID,
+              callback: handleGsiResponse,
+              auto_select: false
+            });
+            google.accounts.id.renderButton(
+              document.getElementById("gsiContainer"),
+              { theme: "outline", size: "large", shape: "pill", text: "continue_with", width: "100%" }
+            );
+          }
+        }, 100);
+      }
+
+      async function handleGsiResponse(response) {
+        state.idToken = response.credential;
+        state.user = parseJwt(state.idToken);
+
+        document.getElementById('userAvatar').src = state.user.picture;
+        document.getElementById('userName').textContent = state.user.name;
+        document.getElementById('userEmail').textContent = state.user.email;
+
+        els.outView.classList.add('hidden');
+        els.inView.classList.remove('hidden');
+
+        await checkExistingRegistration();
+      }
+
+      function parseJwt(token) {
+        const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+        return JSON.parse(jsonPayload);
+      }
+
+      async function checkExistingRegistration() {
+        showAlert('กำลังตรวจสอบสิทธิ์ในระบบ...', 'info', true);
+        try {
+          const records = await Api.get('getMyRegistration', { email: state.user.email, idToken: state.idToken });
+          els.globalAlert.innerHTML = '';
+
+          if (records && records.length > 0) {
+            const r = records[records.length - 1];
+            document.getElementById('tvId').textContent = r.id;
+            document.getElementById('tvCount').textContent = `${r.total_participants} คน`;
+
+            const pdfBtn = document.getElementById('tvPdfBtn');
+            if (r.pdf_url) {
+              pdfBtn.href = r.pdf_url;
+              pdfBtn.classList.remove('opacity-50', 'pointer-events-none');
+              pdfBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="mr-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> ดาวน์โหลด E-Ticket (PDF)`;
+            } else {
+              pdfBtn.href = "#";
+              pdfBtn.classList.add('opacity-50', 'pointer-events-none');
+              pdfBtn.textContent = 'ระบบกำลังสร้าง PDF กรุณารีเฟรชในอีก 1 นาที';
+            }
+
+            els.form.classList.add('hidden');
+            els.ticketView.classList.remove('hidden');
+          } else {
+            els.form.classList.remove('hidden');
+          }
+        } catch (e) {
+          showAlert(`เกิดข้อผิดพลาดในการตรวจสอบสิทธิ์: ${e.message}`, 'error', true);
+        }
+      }
+
+      function renderKhrobUI() {
+        const prices = state.config.prices;
+        els.kList.innerHTML = KHROB_META.map(i => `
+          <div class="flex justify-between items-center py-5 px-6 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors">
+            <div>
+              <strong class="text-slate-800 text-base">${i.l}</strong>
+              <div class="text-xs text-slate-500 font-medium mt-1">กำนล ${prices[i.k].toLocaleString()} บ./คน</div>
+            </div>
+            <div class="flex items-center gap-3">
+              <button type="button" class="w-10 h-10 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 font-bold flex items-center justify-center transition-colors text-xl" onclick="RegApp.upd('${i.k}', -1)">−</button>
+              <span id="q_${i.k}" class="w-8 text-center font-extrabold text-primary-dark text-xl">0</span>
+              <button type="button" class="w-10 h-10 rounded-xl bg-primary-light border border-primary-main/20 text-primary-main hover:bg-primary-main hover:text-white font-bold flex items-center justify-center transition-colors text-xl" onclick="RegApp.upd('${i.k}', 1)">+</button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      function updateCount(k, dir) {
+        state.khrob[k] = Math.max(0, state.khrob[k] + dir);
+        document.getElementById(`q_${k}`).textContent = state.khrob[k];
+        calculateTotal();
+      }
+
+      function calculateTotal() {
+        const p = state.config.prices;
+        let items = 0, sum = 0;
+        for (const k in state.khrob) {
+          items += state.khrob[k];
+          sum += (state.khrob[k] * p[k]);
+        }
+        sum += (items * p.khan);
+        els.total.innerHTML = `${sum.toLocaleString()} <span class="text-base font-medium text-slate-400">บาท</span>`;
+      }
+
+      if (els.sCount) els.sCount.addEventListener('input', calculateTotal);
+      if (els.tCount) els.tCount.addEventListener('input', calculateTotal);
+
+      els.form.addEventListener('submit', async e => {
+        e.preventDefault();
+        if (state.isSubmitting) return;
+
+        const s = Number(els.sCount.value);
+        const t = Number(els.tCount.value);
+
+        if (s + t <= 0) {
+          showAlert('ต้องระบุจำนวนผู้เข้าร่วมอย่างน้อย 1 คน', 'error', true);
+          els.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+
+        state.isSubmitting = true;
+        els.btn.disabled = true;
+        els.btn.innerHTML = '<div class="spinner w-5 h-5 mr-2 inline-block border-2 border-white/20 border-t-white rounded-full"></div> กำลังบันทึกข้อมูล...';
+
+        const payload = {
+          idToken: state.idToken,
+          institution: document.getElementById('regInstitution').value.trim(),
+          address: document.getElementById('regAddress').value.trim(),
+          coordinator_name: document.getElementById('regCoordinator').value.trim(),
+          coordinator_phone: document.getElementById('regPhone').value.trim(),
+          students_count: s,
+          teachers_count: t,
+          khrob_khru: state.khrob
+        };
+
+        try {
+          const res = await Api.post('register', payload);
+
+          document.getElementById('tvId').textContent = res.id;
+          document.getElementById('tvCount').textContent = `${s + t} คน`;
+          const pdfBtn = document.getElementById('tvPdfBtn');
+          pdfBtn.href = res.pdfUrl || '#';
+          if (!res.pdfUrl) {
+            pdfBtn.classList.add('opacity-50', 'pointer-events-none');
+            pdfBtn.textContent = 'กำลังเตรียม E-Ticket กรุณารีเฟรชหน้าเว็บ...';
+          }
+
+          els.form.classList.add('hidden');
+          els.ticketView.classList.remove('hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        } catch (err) {
+          showAlert(`เกิดข้อผิดพลาด: ${err.message}`, 'error', true);
+          els.btn.disabled = false;
+          els.btn.innerHTML = 'บันทึกข้อมูล & สร้าง E-Ticket';
+          els.form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } finally {
+          state.isSubmitting = false;
+        }
+      });
+
+      function signOut() {
+        state.user = null; state.idToken = null;
+        if (window.google) google.accounts.id.disableAutoSelect();
+
+        els.inView.classList.add('hidden');
+        els.ticketView.classList.add('hidden');
+        els.form.classList.add('hidden');
+        els.outView.classList.remove('hidden');
+
+        els.form.reset();
+        Object.keys(state.khrob).forEach(k => {
+          state.khrob[k] = 0; document.getElementById(`q_${k}`).textContent = 0;
+        });
+        calculateTotal();
+        if (els.alert) els.alert.innerHTML = '';
+        if (els.authAlert) els.authAlert.innerHTML = '';
+      }
+
+      function showAlert(msg, type, isGlobal = false) {
+        const target = isGlobal ? els.alert : els.authAlert;
+        const cls = type === 'error' ? 'bg-error-light border-error-main text-error-dark' :
+          type === 'success' ? 'bg-success-light border-success-main text-success-dark' :
+            'bg-info-light border-info-main text-info-main';
+        target.innerHTML = `<div class="p-4 rounded-xl border mb-6 text-sm font-medium ${cls}">${msg}</div>`;
+      }
+
+      return { init, signOut, upd: updateCount };
+    })();
+
+    document.addEventListener('DOMContentLoaded', RegApp.init);
+  </script>
+</body>
+
+</html>
