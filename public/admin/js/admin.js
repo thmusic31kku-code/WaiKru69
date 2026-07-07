@@ -2,7 +2,7 @@
 
 const SESSION_KEY = 'wkd_admin_session';
 let session = null; // { session, email, name, role }
-let cache = { registrations: [], donations: [], seats: [], admins: [] };
+let cache = { registrations: [], donations: [], seats: [], admins: [], logs: [] };
 
 // ---------------------------------------------------------------------------
 // AUTHENTICATION
@@ -74,7 +74,8 @@ document.getElementById('passwordLoginForm').addEventListener('submit', async fu
   }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => { clearSession(); location.reload(); });
+document.getElementById('logoutBtn').addEventListener('click', () => { stopScanner(); clearSession(); location.reload(); });
+window.addEventListener('beforeunload', () => { stopScanner(); });
 
 const ALL_TABS = ['overview', 'checkin', 'registrations', 'donations', 'seats', 'admins', 'config', 'logs'];
 
@@ -121,18 +122,21 @@ document.querySelectorAll('.admin-nav-btn[data-tab]').forEach(btn => {
     const tab = this.dataset.tab;
     document.getElementById('tabTitle').textContent = TAB_TITLES[tab] || 'แดชบอร์ดผู้ดูแลระบบ';
 
+    // ออกจากแท็บเช็คอินเมื่อไรต้องปิดกล้องเสมอ กันกล้องค้างเปิด/แบตหมด/แอบบันทึกภาพ
+    if (tab !== 'checkin') stopScanner();
+
     PANEL_TABS.forEach(t => {
       const panel = document.getElementById(`panel-${t}`);
       if (panel) panel.classList.toggle('hidden', t !== tab);
     });
 
-    if (tab === 'checkin') {
-      document.getElementById('tabTitle').textContent = TAB_TITLES.checkin;
-    }
+    if (tab === 'overview') loadOverview();
     if (tab === 'registrations') loadRegistrations();
     if (tab === 'donations') loadDonations();
     if (tab === 'seats') loadSeats();
     if (tab === 'admins') loadAdmins();
+    if (tab === 'config') loadConfig();
+    if (tab === 'logs') loadLogs();
   });
 });
 
@@ -149,7 +153,152 @@ document.getElementById('modalOverlay').addEventListener('click', e => {
 });
 
 // ---------------------------------------------------------------------------
-// 1. OVERVIEW
+// 1. CHECK-IN หน้างาน — กล้องสแกน QR (jsQR) + กรอกรหัสด้วยตนเอง (staff + superadmin)
+// ---------------------------------------------------------------------------
+let scannerStream = null;
+let scannerRafId = null;
+let scannerCanvas = null;
+let scannerCtx = null;
+let scannerBusy = false;   // true ระหว่างรอผลจาก adminCheckin กันยิงซ้ำ
+let lastScannedRaw = '';
+let lastScannedAt = 0;
+let checkinHistoryList = [];
+
+function setScannerUiRunning(running) {
+  document.getElementById('scannerWrap').classList.toggle('hidden', !running);
+  document.getElementById('scannerOff').classList.toggle('hidden', running);
+  document.getElementById('btnStartScan').classList.toggle('hidden', running);
+  document.getElementById('btnStopScan').classList.toggle('hidden', !running);
+}
+
+async function startScanner() {
+  const hint = document.getElementById('scannerHint');
+  hint.textContent = '';
+
+  if (typeof jsQR === 'undefined') {
+    hint.textContent = 'ไม่พบไลบรารีสแกน QR (jsQR โหลดไม่สำเร็จ) ตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้า หรือใช้ช่องกรอกรหัสด้วยตนเองด้านล่างแทน';
+    return;
+  }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    hint.textContent = 'เบราว์เซอร์นี้ไม่รองรับการเปิดกล้อง (หรือหน้าเว็บไม่ได้เปิดผ่าน HTTPS) กรุณาใช้ช่องกรอกรหัสด้วยตนเองด้านล่างแทน';
+    return;
+  }
+
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' } } });
+  } catch (e) {
+    hint.textContent = 'ไม่สามารถเข้าถึงกล้องได้ (' + (e.message || e.name) + ') กรุณาอนุญาตการใช้งานกล้องในเบราว์เซอร์แล้วลองใหม่ หรือใช้ช่องกรอกรหัสด้วยตนเอง';
+    return;
+  }
+
+  const video = document.getElementById('scannerVideo');
+  video.srcObject = scannerStream;
+  try { await video.play(); } catch (e) { /* บาง browser autoplay ถูกบล็อก แต่ playsinline+muted ควรผ่านได้ */ }
+  setScannerUiRunning(true);
+
+  scannerCanvas = scannerCanvas || document.createElement('canvas');
+  scannerCtx = scannerCanvas.getContext('2d', { willReadFrequently: true });
+
+  const tick = () => {
+    if (!scannerStream) return; // ถูกสั่งหยุดไปแล้วระหว่างรอเฟรมถัดไป
+    if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth > 0) {
+      scannerCanvas.width = video.videoWidth;
+      scannerCanvas.height = video.videoHeight;
+      scannerCtx.drawImage(video, 0, 0, scannerCanvas.width, scannerCanvas.height);
+      const imageData = scannerCtx.getImageData(0, 0, scannerCanvas.width, scannerCanvas.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+      if (code && code.data) onQrDetected(code.data);
+    }
+    scannerRafId = requestAnimationFrame(tick);
+  };
+  scannerRafId = requestAnimationFrame(tick);
+}
+
+function stopScanner() {
+  if (scannerRafId) { cancelAnimationFrame(scannerRafId); scannerRafId = null; }
+  if (scannerStream) {
+    scannerStream.getTracks().forEach(t => t.stop());
+    scannerStream = null;
+  }
+  const video = document.getElementById('scannerVideo');
+  if (video) video.srcObject = null;
+  setScannerUiRunning(false);
+}
+
+document.getElementById('btnStartScan').addEventListener('click', startScanner);
+document.getElementById('btnStopScan').addEventListener('click', stopScanner);
+
+function onQrDetected(rawText) {
+  const now = Date.now();
+  if (scannerBusy) return;
+  // กันสแกนซ้ำรัว ๆ ขณะกล้องยังเห็น QR เดิมค้างอยู่ในเฟรม (throttle รหัสเดิมไว้ 3 วินาที)
+  if (rawText === lastScannedRaw && (now - lastScannedAt) < 3000) return;
+
+  const parts = String(rawText).split('|');
+  if (parts.length !== 3 || parts[0] !== 'WAIKHRU') {
+    return; // ไม่ใช่ QR ของงานนี้ — เพิกเฉยแล้วสแกนต่อโดยไม่หยุดกล้อง
+  }
+
+  lastScannedRaw = rawText;
+  lastScannedAt = now;
+  submitCheckin(parts[1], parts[2]);
+}
+
+document.getElementById('manualCheckinForm').addEventListener('submit', function (e) {
+  e.preventDefault();
+  const id = document.getElementById('manualRegId').value.trim();
+  const token = document.getElementById('manualToken').value.trim();
+  if (!id || !token) return;
+  submitCheckin(id, token);
+});
+
+async function submitCheckin(id, token) {
+  scannerBusy = true;
+  const resultBox = document.getElementById('checkinResult');
+  resultBox.innerHTML = '<p class="text-slate-400">กำลังตรวจสอบ...</p>';
+  try {
+    const data = await Api.post('adminCheckin', { session: session.session, id: id, qr_token: token });
+    resultBox.innerHTML = `
+      <div style="width:100%;">
+        <div class="text-success-dark font-bold text-lg mb-2">✅ เช็คอินสำเร็จ</div>
+        <p class="m-0"><strong>${data.name}</strong></p>
+        <p class="text-sm text-slate-500 m-0">${data.institution}</p>
+        <p class="text-sm mt-2">นักเรียน/นักศึกษา ${data.studentsCount} คน · ครู/อาจารย์ ${data.teachersCount} คน · รวม ${data.totalParticipants} คน</p>
+      </div>`;
+    checkinHistoryList.unshift({ id: id, name: data.name, institution: data.institution, time: new Date(), ok: true });
+    document.getElementById('manualCheckinForm').reset();
+  } catch (err) {
+    resultBox.innerHTML = `
+      <div style="width:100%;">
+        <div class="text-error-main font-bold text-lg mb-2">✕ เช็คอินไม่สำเร็จ</div>
+        <p class="text-sm m-0">${err.message}</p>
+      </div>`;
+    checkinHistoryList.unshift({ id: id, name: '-', institution: err.message, time: new Date(), ok: false });
+  } finally {
+    scannerBusy = false;
+    renderCheckinHistory();
+  }
+}
+
+function renderCheckinHistory() {
+  const container = document.getElementById('checkinHistory');
+  if (!checkinHistoryList.length) {
+    container.innerHTML = '<p class="text-sm text-slate-400 p-4">ยังไม่มีการสแกนในเซสชันนี้</p>';
+    return;
+  }
+  container.innerHTML = checkinHistoryList.slice(0, 30).map(item => `
+    <div class="p-3 border-b flex justify-between items-center gap-2">
+      <div>
+        <div class="font-semibold text-sm ${item.ok ? 'text-slate-800' : 'text-error-main'}">${item.ok ? '✅' : '✕'} ${item.id}</div>
+        <div class="text-xs text-slate-500">${item.name}${item.institution ? ' · ' + item.institution : ''}</div>
+      </div>
+      <div class="text-xs text-slate-400">${item.time.toLocaleTimeString('th-TH')}</div>
+    </div>
+  `).join('');
+}
+
+// ---------------------------------------------------------------------------
+// 1b. OVERVIEW
 // ---------------------------------------------------------------------------
 async function loadOverview() {
   const grid = document.getElementById('statGrid');
@@ -172,7 +321,7 @@ async function loadOverview() {
       </div>
     `).join('');
   } catch (e) {
-    grid.innerHTML = `<div class="alert alert-error col-span-12">โหลดสถิติไม่สำเร็จ: ${e.message}</div>`;
+    grid.innerHTML = `<div class="alert alert-error" style="grid-column:1/-1;">โหลดสถิติไม่สำเร็จ: ${e.message}</div>`;
   }
 }
 
@@ -492,6 +641,105 @@ async function saveNewPassword() {
     alert('ตั้งรหัสผ่านเรียบร้อยแล้ว ครั้งต่อไปสามารถเข้าสู่ระบบด้วย username/password ได้');
   } catch (e) { alert('บันทึกไม่สำเร็จ: ' + e.message); }
 }
+
+// ---------------------------------------------------------------------------
+// 6. CONFIG (Superadmin Only) — ดู/แก้ค่าตั้งค่าระบบทั้งหมดจากแดชบอร์ดโดยตรง
+// ---------------------------------------------------------------------------
+const CONFIG_FIELD_KEYS = [
+  'EVENT_NAME', 'EVENT_DATE_TEXT', 'REG_DEADLINE', 'VENUE', 'COORDINATOR_NAME', 'COORDINATOR_EMAIL',
+  'BANK_NAME', 'BANK_ACCOUNT_NAME', 'BANK_ACCOUNT_NO', 'TOTAL_SEATS',
+  'PRICE_KHROB_CHING', 'PRICE_SATHUKAN', 'PRICE_TRA_HOM_ROENG', 'PRICE_KRABONG_KAN', 'PRICE_BAT_SAKUNEE', 'PRICE_KHAN_WAI_KHRU',
+  'GOOGLE_CLIENT_ID', 'DRIVE_FOLDER_SLIPS_ID', 'DRIVE_FOLDER_PDF_ID', 'LOGO_FILE_ID'
+];
+
+async function loadConfig() {
+  const alertBox = document.getElementById('configAlert');
+  alertBox.innerHTML = '';
+  try {
+    const rows = await Api.get('adminGetConfig', { session: session.session });
+    const cfg = {};
+    rows.forEach(r => { cfg[r.key] = r.value; });
+
+    document.getElementById('cfgRegistrationOpen').checked = String(cfg.REGISTRATION_OPEN).toUpperCase() !== 'FALSE';
+    CONFIG_FIELD_KEYS.forEach(key => {
+      const el = document.getElementById('cfg_' + key);
+      if (el) el.value = cfg[key] !== undefined ? cfg[key] : '';
+    });
+  } catch (e) {
+    alertBox.innerHTML = `<div class="alert alert-error">โหลดค่าตั้งค่าไม่สำเร็จ: ${e.message}</div>`;
+  }
+}
+
+// สลับสวิตช์เปิด/ปิดรับลงทะเบียน — บันทึกทันทีโดยไม่ต้องรอกดปุ่ม "บันทึกการตั้งค่าทั้งหมด"
+document.getElementById('cfgRegistrationOpen').addEventListener('change', async function () {
+  const checked = this.checked;
+  const alertBox = document.getElementById('configAlert');
+  try {
+    await Api.post('adminUpdateConfig', { session: session.session, updates: { REGISTRATION_OPEN: checked ? 'TRUE' : 'FALSE' } });
+    alertBox.innerHTML = `<div class="alert alert-success">${checked ? 'เปิดรับลงทะเบียนแล้ว' : 'ปิดรับลงทะเบียนแล้ว'}</div>`;
+  } catch (e) {
+    this.checked = !checked; // ย้อนสถานะกลับถ้าบันทึกไม่สำเร็จ
+    alertBox.innerHTML = `<div class="alert alert-error">เปลี่ยนสถานะไม่สำเร็จ: ${e.message}</div>`;
+  }
+});
+
+document.getElementById('configForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const btn = document.getElementById('btnSaveConfig');
+  const alertBox = document.getElementById('configAlert');
+  btn.disabled = true;
+  btn.textContent = 'กำลังบันทึก...';
+
+  const updates = {};
+  CONFIG_FIELD_KEYS.forEach(key => {
+    const el = document.getElementById('cfg_' + key);
+    if (el) updates[key] = el.value;
+  });
+  updates.REGISTRATION_OPEN = document.getElementById('cfgRegistrationOpen').checked ? 'TRUE' : 'FALSE';
+
+  try {
+    await Api.post('adminUpdateConfig', { session: session.session, updates: updates });
+    alertBox.innerHTML = '<div class="alert alert-success">บันทึกการตั้งค่าเรียบร้อยแล้ว</div>';
+  } catch (err) {
+    alertBox.innerHTML = `<div class="alert alert-error">บันทึกไม่สำเร็จ: ${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'บันทึกการตั้งค่าทั้งหมด';
+  }
+});
+
+// ---------------------------------------------------------------------------
+// 7. LOGS (Superadmin Only) — ประวัติการทำงานล่าสุด (อ่านอย่างเดียว)
+// ---------------------------------------------------------------------------
+async function loadLogs() {
+  const tbody = document.querySelector('#logTable tbody');
+  tbody.innerHTML = '<tr><td colspan="4" class="text-center text-slate-500 py-8">กำลังโหลด...</td></tr>';
+  try {
+    cache.logs = await Api.get('adminListLogs', { session: session.session });
+    renderLogTable(cache.logs);
+  } catch (e) {
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center text-error-main py-8">โหลดไม่สำเร็จ: ${e.message}</td></tr>`;
+  }
+}
+
+function renderLogTable(rows) {
+  const tbody = document.querySelector('#logTable tbody');
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4" class="text-center text-slate-500 py-8">ไม่พบข้อมูล</td></tr>'; return; }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="text-sm">${new Date(r.timestamp).toLocaleString('th-TH')}</td>
+      <td class="font-medium">${r.actor_email}</td>
+      <td>${r.action}</td>
+      <td class="text-xs text-slate-500">${String(r.detail || '').slice(0, 120)}</td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('logSearch').addEventListener('input', function () {
+  const q = this.value.toLowerCase();
+  renderLogTable((cache.logs || []).filter(r => (String(r.actor_email) + String(r.action)).toLowerCase().includes(q)));
+});
+document.getElementById('refreshLogsBtn').addEventListener('click', loadLogs);
 
 // ---------------------------------------------------------------------------
 // CSV EXPORT (Helpers)

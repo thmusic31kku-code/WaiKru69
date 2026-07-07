@@ -300,13 +300,31 @@
   vertical-align: middle;
   border: 1px solid var(--glass-border-soft);
 }
-.box-empty { background: transparent; }
-.box-reserved { background: rgba(203, 161, 53, 0.16); }
-.box-blocked { background: rgba(53, 41, 26, 0.08); }
+
+.box-empty {
+  background: transparent;
+}
+
+.box-reserved {
+  background: rgba(203, 161, 53, 0.16);
+}
+
+.box-blocked {
+  background: rgba(53, 41, 26, 0.08);
+}
 
 /* Seat states in admin grid */
-.seat-admin.reserved { background: rgba(203, 161, 53, 0.18); color: #8A5B00; border-color: rgba(203,161,53,0.4); }
-.seat-admin.blocked { background: rgba(53,41,26,0.08); color: var(--ink-soft); border-color: var(--glass-border-soft); }
+.seat-admin.reserved {
+  background: rgba(203, 161, 53, 0.18);
+  color: #8A5B00;
+  border-color: rgba(203, 161, 53, 0.4);
+}
+
+.seat-admin.blocked {
+  background: rgba(53, 41, 26, 0.08);
+  color: var(--ink-soft);
+  border-color: var(--glass-border-soft);
+}
 
 .seat-admin.reserved {
   background: var(--primary-main);
@@ -367,4 +385,107 @@
   margin-top: 24px;
   padding-top: 16px;
   border-top: 1px solid var(--glass-border);
+}
+
+/* ============================================================================
+   Check-in Scanner (เพิ่มเข้ามาใหม่ — เดิมไม่มีสไตล์ ทำให้กล้อง/สวิตช์แสดงผลผิดรูป)
+   ============================================================================ */
+.scanner-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+}
+
+.scanner-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scanner-frame {
+  position: absolute;
+  inset: 12%;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 16px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.scanner-off {
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  border-radius: 16px;
+  border: 2px dashed var(--glass-border);
+  background: var(--bg-body);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 16px;
+}
+
+.scanner-off svg {
+  opacity: .5;
+}
+
+/* ---------- Toggle Switch (ใช้กับสวิตช์เปิด/ปิดรับลงทะเบียนในแท็บ Config) ---------- */
+.kku-switch {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.kku-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.kku-switch-track {
+  width: 52px;
+  height: 30px;
+  background: var(--gray-800, #94a3b8);
+  opacity: .35;
+  border-radius: 999px;
+  position: relative;
+  transition: background .2s ease, opacity .2s ease;
+  display: inline-block;
+}
+
+.kku-switch-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform .2s ease;
+}
+
+.kku-switch input:checked~.kku-switch-track {
+  background: var(--success-main, #22c55e);
+  opacity: 1;
+}
+
+.kku-switch input:checked~.kku-switch-track .kku-switch-thumb {
+  transform: translateX(22px);
 }
