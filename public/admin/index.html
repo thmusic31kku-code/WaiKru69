@@ -61,14 +61,18 @@
        ========================================== -->
   <div class="admin-shell hidden" id="adminShell">
 
+    <!-- Sidebar overlay ป้องกันคลิกทะลุไปหลังไซด์บาร์ตอนเปิดเมนูมือถือ / คลิกเพื่อปิดเมนู -->
+    <div class="admin-sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <!-- Sidebar -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="adminSidebar">
       <div class="admin-brand">
         <img src="../assets/Main-logo.svg" alt="Logo" />
         <div class="kku-brand-text">
           <strong class="text-primary-dark">Admin Console</strong>
           <span class="text-xs text-slate-500">ไหว้ครูดนตรี มข.</span>
         </div>
+        <button type="button" class="admin-sidebar-close-btn" id="sidebarCloseBtn" aria-label="ปิดเมนู">✕</button>
       </div>
 
       <nav class="admin-nav">
@@ -144,7 +148,17 @@
 
       <!-- Topbar -->
       <header class="admin-topbar">
-        <h2 id="tabTitle" class="text-2xl font-bold m-0 text-slate-800">ภาพรวม (Overview)</h2>
+        <div class="admin-topbar-left">
+          <button type="button" class="admin-hamburger-btn" id="sidebarToggleBtn" aria-label="เปิดเมนู">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <h2 id="tabTitle" class="text-2xl font-bold m-0 text-slate-800">ภาพรวม (Overview)</h2>
+        </div>
         <div class="admin-user-profile">
           <div class="text-right hidden sm:block">
             <div class="font-bold text-sm text-primary-dark" id="adminName">Loading...</div>
@@ -293,12 +307,13 @@
         <!-- 5. Seats -->
         <section id="panel-seats" class="hidden">
           <div class="kku-card">
-            <div class="flex items-center gap-6 mb-6 pb-4 border-b border-glass-border">
+            <div class="flex flex-wrap items-center gap-6 mb-6 pb-4 border-b border-glass-border">
               <div class="flex items-center gap-2"><span
                   class="w-4 h-4 rounded bg-slate-100 border border-slate-300"></span> <span class="text-sm">ว่าง
                   (Available)</span></div>
               <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-primary-main text-white"></span>
-                <span class="text-sm">จองแล้ว (Reserved)</span></div>
+                <span class="text-sm">จองแล้ว (Reserved)</span>
+              </div>
               <div class="flex items-center gap-2"><span class="w-4 h-4 rounded bg-slate-800"></span> <span
                   class="text-sm">บล็อก (Blocked)</span></div>
             </div>
@@ -333,7 +348,7 @@
 
         <!-- 7. Config (superadmin only) -->
         <section id="panel-config" class="hidden">
-          <div class="kku-card mb-6" style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="kku-card mb-6 flex flex-wrap justify-between items-center gap-4">
             <div>
               <h3 class="text-primary-dark m-0">สถานะรับลงทะเบียน</h3>
               <p class="text-sm text-slate-500 m-0">ปิดสวิตช์นี้เพื่อหยุดรับลงทะเบียนใหม่ทันที
@@ -427,7 +442,7 @@
         <!-- 8. Logs (superadmin only) -->
         <section id="panel-logs" class="hidden">
           <div class="kku-card p-0 overflow-hidden">
-            <div class="p-4 border-b border-glass-border flex justify-between items-center gap-4 bg-slate-50">
+            <div class="p-4 border-b border-glass-border flex flex-wrap justify-between items-center gap-4 bg-slate-50">
               <input type="search" id="logSearch" class="kku-input w-full max-w-sm"
                 placeholder="🔍 ค้นหาผู้ดำเนินการ หรือ การกระทำ..." />
               <button class="kku-btn kku-btn-outline" id="refreshLogsBtn">🔄 รีเฟรช</button>

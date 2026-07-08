@@ -77,6 +77,31 @@ document.getElementById('passwordLoginForm').addEventListener('submit', async fu
 document.getElementById('logoutBtn').addEventListener('click', () => { stopScanner(); clearSession(); location.reload(); });
 window.addEventListener('beforeunload', () => { stopScanner(); });
 
+// ---------------------------------------------------------------------------
+// MOBILE SIDEBAR (เมนูลิ้นชักบนมือถือ) — เดิมไซด์บาร์เรียงต่อกันในแนวตั้งบนหน้าจอแคบ
+// ทำให้ผู้ใช้ต้องเลื่อนผ่านปุ่มเมนูทั้งหมดก่อนถึงเนื้อหา จึงเปลี่ยนเป็นลิ้นชักที่เปิด/ปิดได้แทน
+// ---------------------------------------------------------------------------
+const sidebarEl = document.getElementById('adminSidebar');
+const sidebarBackdropEl = document.getElementById('sidebarBackdrop');
+const sidebarToggleBtn = document.getElementById('sidebarToggleBtn');
+const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+
+function openSidebar() {
+  sidebarEl.classList.add('open');
+  sidebarBackdropEl.classList.add('open');
+  document.body.classList.add('sidebar-locked');
+}
+function closeSidebar() {
+  sidebarEl.classList.remove('open');
+  sidebarBackdropEl.classList.remove('open');
+  document.body.classList.remove('sidebar-locked');
+}
+if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', openSidebar);
+if (sidebarCloseBtn) sidebarCloseBtn.addEventListener('click', closeSidebar);
+if (sidebarBackdropEl) sidebarBackdropEl.addEventListener('click', closeSidebar);
+// กันเมนูค้างเปิดถ้าผู้ใช้หมุนจอ/ขยายหน้าต่างกลับไปเป็นขนาดเดสก์ท็อป
+window.addEventListener('resize', () => { if (window.innerWidth > 900) closeSidebar(); });
+
 const ALL_TABS = ['overview', 'checkin', 'registrations', 'donations', 'seats', 'admins', 'config', 'logs'];
 
 function showDashboard() {
@@ -117,6 +142,7 @@ const PANEL_TABS = ['overview', 'checkin', 'registrations', 'donations', 'seats'
 
 document.querySelectorAll('.admin-nav-btn[data-tab]').forEach(btn => {
   btn.addEventListener('click', function () {
+    closeSidebar(); // ปิดเมนูลิ้นชักทันทีที่เลือกแท็บ (มีผลเฉพาะบนมือถือที่เมนูเป็นลิ้นชัก)
     document.querySelectorAll('.admin-nav-btn[data-tab]').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
     const tab = this.dataset.tab;
