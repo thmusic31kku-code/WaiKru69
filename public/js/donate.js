@@ -12,6 +12,12 @@ const DonApp = (function() {
 
   const els = {
     form: document.getElementById('donateForm'),
+    formWrap: document.getElementById('donateFormWrap'),
+    successPanel: document.getElementById('donateSuccess'),
+    successRefId: document.getElementById('successRefId'),
+    successAmount: document.getElementById('successAmount'),
+    btnDonateAgain: document.getElementById('btnDonateAgain'),
+    loadingOverlay: document.getElementById('donateLoadingOverlay'),
     dropzone: document.getElementById('slipDropzone'),
     input: document.getElementById('slipInput'),
     preview: document.getElementById('slipPreview'),
@@ -20,10 +26,56 @@ const DonApp = (function() {
     btn: document.getElementById('btnSubmitDonate')
   };
 
+  // เก็บ HTML เดิมของปุ่มไว้ (ไอคอน + ข้อความ) เพื่อคืนค่ากลับให้ถูกต้องหลังส่งข้อมูลเสร็จ
+  const btnDefaultHTML = els.btn ? els.btn.innerHTML : '';
+
   async function init() {
     initDropzone();
     initMobileMenu();
+    if (els.btnDonateAgain) els.btnDonateAgain.addEventListener('click', resetToForm);
     await fetchBankInfo();
+  }
+
+  /** แสดง/ซ่อน overlay โหลดขณะกำลังส่งข้อมูลไปเซิร์ฟเวอร์ ให้ผู้ใช้รู้ว่าระบบกำลังบันทึกอยู่ */
+  function setLoading(isLoading) {
+    if (!els.loadingOverlay) return;
+    els.loadingOverlay.classList.toggle('hidden', !isLoading);
+  }
+
+  /** สลับจากฟอร์มไปเป็นหน้าขอบคุณ พร้อมแสดงรหัสอ้างอิงและยอดเงินที่แจ้งโอน */
+  function showSuccessState(refId, amount) {
+    if (els.successRefId) els.successRefId.textContent = refId || '-';
+    if (els.successAmount) {
+      const amountNum = Number(amount) || 0;
+      els.successAmount.textContent = `฿ ${amountNum.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+    if (els.alert) els.alert.innerHTML = '';
+    if (els.formWrap) els.formWrap.classList.add('hidden');
+    if (els.successPanel) {
+      els.successPanel.classList.remove('hidden');
+      els.successPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  /** ล้างฟอร์มและกลับไปหน้ากรอกข้อมูลใหม่ (กดจากปุ่ม "แจ้งโอนเงินเพิ่มเติมอีกครั้ง") */
+  function resetToForm() {
+    if (els.successPanel) els.successPanel.classList.add('hidden');
+    if (els.formWrap) els.formWrap.classList.remove('hidden');
+    if (els.form) els.form.reset();
+
+    state.base64 = null;
+    state.mimeType = null;
+
+    if (els.preview) {
+      els.preview.classList.add('hidden');
+      els.preview.src = "";
+    }
+    if (els.text) els.text.textContent = 'คลิกที่นี่เพื่อเลือกไฟล์สลิป';
+    if (els.dropzone) {
+      els.dropzone.classList.remove('border-success-main', 'bg-success-light');
+      els.dropzone.classList.add('border-slate-300', 'bg-slate-50', 'hover:border-primary-main', 'hover:bg-primary-light');
+    }
+    if (els.formWrap) els.formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   async function fetchBankInfo() {
@@ -122,6 +174,7 @@ const DonApp = (function() {
       els.btn.disabled = true;
       els.btn.innerHTML = '<svg class="w-5 h-5 mr-2 inline-block border-2 border-white/20 border-t-white rounded-full animate-spin" viewBox="0 0 24 24"></svg> กำลังอัปโหลดข้อมูลเข้าสู่ระบบ...';
       els.alert.innerHTML = '';
+      setLoading(true);
 
       const payload = {
         donor_name: document.getElementById('donName').value.trim(),
@@ -135,23 +188,16 @@ const DonApp = (function() {
 
       try {
         const res = await Api.post('donate', payload);
-        showAlert(`ส่งข้อมูลสำเร็จ! รหัสอ้างอิง: <strong>${res.id}</strong> ทีมงานจะตรวจสอบยอดและปรับปรุงข้อมูลโดยเร็วที่สุด`, 'success');
-        
-        // Reset Form
-        els.form.reset();
-        state.base64 = null;
-        els.preview.classList.add('hidden');
-        els.preview.src = "";
-        els.text.textContent = 'คลิกที่นี่เพื่อเลือกไฟล์สลิปใหม่';
-        els.dropzone.classList.remove('border-success-main', 'bg-success-light');
-        els.dropzone.classList.add('border-slate-300', 'bg-slate-50', 'hover:border-primary-main', 'hover:bg-primary-light');
-        
+        // สำเร็จ: ซ่อนฟอร์มแล้วแสดงหน้าขอบคุณแทน เพื่อให้ผู้ใช้มั่นใจว่าระบบบันทึกข้อมูลแล้วจริง ๆ
+        showSuccessState(res.id, payload.amount);
+
       } catch (error) {
         showAlert(`เกิดข้อผิดพลาด: ${error.message}`, 'error');
       } finally {
+        setLoading(false);
         state.isSubmitting = false;
         els.btn.disabled = false;
-        els.btn.innerHTML = 'ยืนยันการแจ้งโอนเงิน';
+        els.btn.innerHTML = btnDefaultHTML;
       }
     });
   }

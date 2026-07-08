@@ -1074,7 +1074,7 @@ svg {
   border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 28px;
   padding: 24px;
-  min-height: 220px;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1959,12 +1959,37 @@ svg {
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  z-index: 0;
+  z-index: 1;
   pointer-events: none;
-  background: linear-gradient(145deg, rgba(255, 252, 252, 0.7) 0%, rgba(255, 241, 244, 0.5) 28%, rgba(255, 247, 243, 0.4) 60%, rgba(239, 208, 201, 0.4) 100%);
+  background: linear-gradient(145deg, rgba(255, 252, 252, 0.82) 0%, rgba(255, 241, 244, 0.72) 28%, rgba(255, 247, 243, 0.68) 60%, rgba(239, 208, 201, 0.68) 100%);
   backdrop-filter: blur(8px) saturate(130%);
   -webkit-backdrop-filter: blur(8px) saturate(130%);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+/* Hero background slideshow (5 images, auto-crossfade) */
+.kku-hero-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  background-color: var(--gold-100);
+}
+
+.kku-hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 2.2s ease-in-out;
+  will-change: opacity;
+}
+
+.kku-hero-slide.is-active {
+  opacity: 0.22;
 }
 
 .kku-hero-content {
@@ -2044,6 +2069,66 @@ svg {
 }
 
 @keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Photo Gallery Marquee (ประมวลภาพ) */
+.kku-gallery-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+
+.kku-gallery-wrapper:hover .kku-gallery-track {
+  animation-play-state: paused;
+}
+
+.kku-gallery-track {
+  display: flex;
+  width: max-content;
+  gap: 20px;
+  animation: gallery-scroll-left 34s linear infinite;
+}
+
+.kku-gallery-item {
+  flex: 0 0 auto;
+  width: 220px;
+  height: 280px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(167, 121, 36, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.kku-gallery-item:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 18px 40px rgba(167, 121, 36, 0.22);
+}
+
+.kku-gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+@media (min-width: 900px) {
+  .kku-gallery-item {
+    width: 300px;
+    height: 380px;
+  }
+}
+
+@keyframes gallery-scroll-left {
   0% {
     transform: translateX(0);
   }
@@ -2590,6 +2675,14 @@ textarea {
 
 .delay-200 {
   transition-delay: 200ms;
+}
+
+.delay-300 {
+  transition-delay: 300ms;
+}
+
+.delay-400 {
+  transition-delay: 400ms;
 }
 
 :root {
@@ -7135,4 +7228,173 @@ textarea.form-input {
   justify-content: center;
   gap: 16px;
   flex-wrap: wrap;
+}
+/* ============================================================================
+   WAI KRU SITE FOOTER
+   Matches the footer used in the ระบบลงทะเบียนบรรเลงถวายมือ (registration
+   system) 1:1 in structure and style, so both pages share one footer design.
+   Classes are prefixed "wk-" so they can't collide with the footer rules
+   already bundled earlier in this file.
+   ============================================================================ */
+.wk-footer {
+  background: var(--slate-50, #f8fafc);
+  border-top: 1px solid var(--slate-200, #e2e8f0);
+  padding: 48px 0 32px;
+  margin-top: auto;
+}
+
+.wk-footer-inner {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+@media (min-width: 768px) {
+  .wk-footer-inner {
+    padding: 0 32px;
+  }
+}
+
+.wk-footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  margin-bottom: 40px;
+}
+
+.wk-footer-left {
+  flex: 1;
+  min-width: 280px;
+  max-width: 500px;
+}
+
+.wk-footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.wk-footer-logos img {
+  height: 48px;
+  object-fit: contain;
+}
+
+.wk-footer-desc {
+  color: var(--slate-700, #334155);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.wk-footer-right {
+  flex: 1;
+  min-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.wk-footer-nav {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.wk-footer-nav a {
+  color: var(--slate-700, #334155);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.wk-footer-nav a:hover {
+  color: var(--primary-main);
+}
+
+.wk-footer-socials {
+  display: flex;
+  gap: 12px;
+}
+
+.wk-social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--slate-300, #cbd5e1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--slate-600, #475569);
+  transition: all 0.2s;
+}
+
+.wk-social-btn:hover {
+  border-color: var(--primary-main);
+  color: var(--primary-main);
+  background: var(--primary-50, #fcf3f1);
+}
+
+.wk-footer-bottom {
+  border-top: 1px solid var(--slate-200, #e2e8f0);
+  padding-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.wk-footer-copy {
+  color: var(--slate-700, #334155);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.wk-footer-copy p {
+  margin: 0;
+}
+
+.wk-footer-copy p:first-child {
+  font-weight: 500;
+}
+
+.wk-footer-recaptcha {
+  color: var(--slate-600, #475569);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  text-align: right;
+  max-width: 450px;
+}
+
+.wk-footer-recaptcha a {
+  text-decoration: underline;
+  color: var(--slate-700, #334155);
+}
+
+.wk-footer-recaptcha a:hover {
+  color: var(--primary-main);
+}
+
+@media (max-width: 768px) {
+
+  .wk-footer-right,
+  .wk-footer-nav,
+  .wk-footer-recaptcha {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .wk-footer-right {
+    gap: 16px;
+  }
+
+  .wk-footer-logos img {
+    height: 40px;
+  }
 }

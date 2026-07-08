@@ -37,7 +37,19 @@
   </style>
 </head>
 
-<body class="is-loading bg-slate-50 flex flex-col min-h-screen">
+<body class="is-loading flex flex-col min-h-screen">
+
+  <!-- ==========================================
+       AMBIENT BACKGROUND (ลูกเล่นพื้นหลัง — ไล่เฉดสีทอง/งาช้างเคลื่อนไหวช้า ๆ อยู่หลังสุด
+       ไม่รบกวนการอ่าน เพราะ blur หนักและ opacity ต่ำ)
+       ========================================== -->
+  <div class="liquid-bg-container" aria-hidden="true">
+    <div class="liquid-orb orb-primary"></div>
+    <div class="liquid-orb orb-secondary"></div>
+    <div class="liquid-orb orb-accent"></div>
+    <div class="liquid-orb orb-highlight"></div>
+    <div class="noise-overlay"></div>
+  </div>
 
   <!-- ==========================================
        PAGE LOADER
@@ -80,15 +92,22 @@
     <section id="hero" class="kku-hero-section">
       <div class="kku-container">
         <div class="kku-hero-bg fade-in-up">
+          <div class="kku-hero-slideshow" id="heroSlideshow" aria-hidden="true">
+            <div class="kku-hero-slide is-active" style="background-image:url('assets/img1.jpg')"></div>
+            <div class="kku-hero-slide" style="background-image:url('assets/img2.jpg')"></div>
+            <div class="kku-hero-slide" style="background-image:url('assets/img3.jpg')"></div>
+            <div class="kku-hero-slide" style="background-image:url('assets/img4.jpg')"></div>
+            <div class="kku-hero-slide" style="background-image:url('assets/img5.jpg')"></div>
+          </div>
           <div class="kku-hero-content">
 
             <!-- Status Badge -->
-            <div class="kku-chip border border-primary-main/20 bg-primary-light">
+            <div class="kku-chip border border-primary-main/20 bg-primary-light fade-in-up delay-100">
               <span class="text-primary-dark font-bold tracking-wide text-xs"
                 id="registrationStatusChip">ระบบสำรองที่นั่งเข้าร่วมงาน</span>
             </div>
 
-            <div class="mb-8">
+            <div class="mb-8 fade-in-up delay-100">
               <h1 class="kku-hero-title">พิธีไหว้ครูดนตรี<br><span
                   class="text-primary-main">ภาคตะวันออกเฉียงเหนือ</span></h1>
               <p class="kku-hero-subtitle" id="eventSubtitle">
@@ -96,7 +115,7 @@
               </p>
             </div>
 
-            <div class="kku-hero-actions">
+            <div class="kku-hero-actions fade-in-up delay-200">
               <a href="register.html" class="kku-btn kku-btn-primary kku-btn-large shadow-lg hover:-translate-y-1"
                 id="btnRegisterHero">ลงทะเบียน &amp; สำรองที่นั่ง</a>
               <a href="https://script.google.com/macros/s/AKfycby3Yjc1xNnzEeTDmgSE2c_jBmdrHC4l6FSdQ2CPkAojOiO3M50w0V05GuNxl86OYl42/exec"
@@ -107,12 +126,18 @@
                 class="kku-btn kku-btn-outline kku-btn-large hover:-translate-y-1">ร่วมทำบุญสมทบงาน</a>
             </div>
 
-            <div class="mt-8 text-slate-600 font-medium flex items-center gap-2" id="seatsStatusText">
+            <div class="mt-8 text-slate-600 font-medium flex items-center gap-2 fade-in-up delay-200" id="seatsStatusText">
               <span class="skeleton w-48 h-5 rounded-md"></span>
             </div>
 
+            <!-- นับถอยหลังสู่วันงาน -->
+            <div class="mt-3 text-slate-500 text-sm font-medium flex items-center gap-2 fade-in-up delay-200">
+              <i class="fa-regular fa-clock text-primary-main" aria-hidden="true"></i>
+              <span id="countdownText">กำลังคำนวณเวลานับถอยหลัง...</span>
+            </div>
+
             <!-- Auto-scrolling Marquee -->
-            <div class="kku-marquee-wrapper mt-12">
+            <div class="kku-marquee-wrapper mt-12 fade-in-up delay-300">
               <div class="kku-marquee-content">
                 <div class="kku-marquee-item">พิธีเจริญพระพุทธมนต์</div>
                 <div class="kku-marquee-item">การบรรเลงดนตรีถวายมือ</div>
@@ -143,7 +168,7 @@
     <section class="kku-section">
       <div class="kku-container fade-in-up delay-100">
         <div class="kku-grid-3">
-          <div class="kku-card center bg-white p-8">
+          <div class="kku-card center bg-white p-8 fade-in-up delay-100">
             <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">ยอดบริจาคสมทบทุน</h4>
             <div class="text-3xl sm:text-4xl font-extrabold text-primary-main flex items-baseline justify-center gap-2"
               id="totalDonationAmount">
@@ -151,7 +176,7 @@
                 class="text-base text-slate-400 font-medium">บาท</span>
             </div>
           </div>
-          <div class="kku-card center bg-white p-8">
+          <div class="kku-card center bg-white p-8 fade-in-up delay-200">
             <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">จำนวนผู้ร่วมทำบุญ</h4>
             <div class="text-3xl sm:text-4xl font-extrabold text-slate-800 flex items-baseline justify-center gap-2"
               id="totalDonors">
@@ -159,13 +184,40 @@
                 class="text-base text-slate-400 font-medium">ท่าน</span>
             </div>
           </div>
-          <div class="kku-card center bg-white p-8">
+          <div class="kku-card center bg-white p-8 fade-in-up delay-300">
             <h4 class="text-slate-500 mb-3 font-medium text-xs uppercase tracking-wider">ผู้ลงทะเบียนเข้าร่วม</h4>
             <div class="text-3xl sm:text-4xl font-extrabold text-slate-800 flex items-baseline justify-center gap-2"
               id="totalParticipants">
               <span class="skeleton w-16 h-10 rounded"></span> <span
                 class="text-base text-slate-400 font-medium">คน</span>
             </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY SECTION (ประมวลภาพ) -->
+    <section id="gallery" class="kku-section bg-white">
+      <div class="kku-container">
+        <div class="kku-section-header fade-in-up">
+          <span class="eyebrow text-primary-main text-xs uppercase tracking-widest block mb-2 font-bold">Gallery</span>
+          <h2 class="kku-section-title">ประมวลภาพบรรยากาศงาน</h2>
+          <p class="kku-section-desc">ภาพบรรยากาศจากการจัดงานพิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ</p>
+        </div>
+
+        <div class="kku-gallery-wrapper fade-in-up delay-100">
+          <div class="kku-gallery-track">
+            <div class="kku-gallery-item"><img src="assets/img1.jpg" alt="ภาพบรรยากาศงานพิธีไหว้ครูดนตรี 1" loading="lazy"></div>
+            <div class="kku-gallery-item"><img src="assets/img2.jpg" alt="ภาพบรรยากาศงานพิธีไหว้ครูดนตรี 2" loading="lazy"></div>
+            <div class="kku-gallery-item"><img src="assets/img3.jpg" alt="ภาพบรรยากาศงานพิธีไหว้ครูดนตรี 3" loading="lazy"></div>
+            <div class="kku-gallery-item"><img src="assets/img4.jpg" alt="ภาพบรรยากาศงานพิธีไหว้ครูดนตรี 4" loading="lazy"></div>
+            <div class="kku-gallery-item"><img src="assets/img5.jpg" alt="ภาพบรรยากาศงานพิธีไหว้ครูดนตรี 5" loading="lazy"></div>
+            <!-- ชุดซ้ำสำหรับเลื่อนวนแบบไร้รอยต่อ -->
+            <div class="kku-gallery-item" aria-hidden="true"><img src="assets/img1.jpg" alt="" loading="lazy"></div>
+            <div class="kku-gallery-item" aria-hidden="true"><img src="assets/img2.jpg" alt="" loading="lazy"></div>
+            <div class="kku-gallery-item" aria-hidden="true"><img src="assets/img3.jpg" alt="" loading="lazy"></div>
+            <div class="kku-gallery-item" aria-hidden="true"><img src="assets/img4.jpg" alt="" loading="lazy"></div>
+            <div class="kku-gallery-item" aria-hidden="true"><img src="assets/img5.jpg" alt="" loading="lazy"></div>
           </div>
         </div>
       </div>
@@ -182,64 +234,74 @@
           </p>
         </div>
 
-        <div class="kku-grid-2 fade-in-up delay-100">
-          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm">
+        <div class="kku-grid-2">
+          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm fade-in-up delay-100">
             <div class="border-b border-slate-200 pb-4 mb-6">
               <h3 class="text-xl sm:text-2xl font-bold text-slate-800 m-0" id="dateDay1">วันเสาร์ที่ 25 กรกฎาคม 2569
               </h3>
             </div>
             <div class="kku-timeline">
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">17.00 น.</div>
+                <div class="kku-timeline-time">13.00 - 17.00 น.</div>
                 <div class="kku-timeline-detail"><strong
-                    class="text-lg text-slate-800">พิธีเจริญพระพุทธมนต์</strong><span
-                    class="text-slate-500 text-sm mt-1 block">นิมนต์พระสงฆ์ 5 รูป เจริญพระพุทธมนต์</span></div>
+                    class="text-lg text-slate-800">จัดเตรียมตกแต่งสถานที่ และประรำพิธี</strong></div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">18.00 น.</div>
-                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">ลงทะเบียน</strong><span
-                    class="text-slate-500 text-sm mt-1 block">สแกน E-Ticket เข้าสู่พื้นที่จัดงาน</span></div>
+                <div class="kku-timeline-time">17.00 - 18.00 น.</div>
+                <div class="kku-timeline-detail"><strong
+                    class="text-lg text-slate-800">พิธีเจริญพระพุทธมนต์เย็น</strong><span
+                    class="text-slate-500 text-sm mt-1 block">พระสงฆ์ 5 รูป</span></div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">18.30 น.</div>
+                <div class="kku-timeline-time">18.00 - 19.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">รับประทานอาหารเย็น</strong>
+                </div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">19.00 - 23.30 น.</div>
                 <div class="kku-timeline-detail"><strong
-                    class="text-lg text-slate-800">การบรรเลงดนตรีถวายมือ</strong><span
-                    class="text-slate-500 text-sm mt-1 block">บรรเลงดนตรีไทยและพื้นบ้าน (ถึง 23.30 น.)</span></div>
+                    class="text-lg text-slate-800">บรรเลงถวายมือ</strong><span
+                    class="text-slate-500 text-sm mt-1 block">โดย นักศึกษาและสถาบันต่าง ๆ</span></div>
               </div>
             </div>
           </div>
-          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm">
+          <div class="kku-card bg-slate-50 border border-slate-200 p-8 shadow-sm fade-in-up delay-200">
             <div class="border-b border-slate-200 pb-4 mb-6">
               <h3 class="text-xl sm:text-2xl font-bold text-slate-800 m-0" id="dateDay2">วันอาทิตย์ที่ 26 กรกฎาคม 2569
               </h3>
             </div>
             <div class="kku-timeline">
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">07.00 น.</div>
-                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">พิธีเจริญพระพุทธมนต์
-                    (เช้า)</strong></div>
+                <div class="kku-timeline-time">07.00 - 08.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">พิธีสงฆ์</strong><span
+                    class="text-slate-500 text-sm mt-1 block">พระสงฆ์ 5 รูป (ถวายภัตตาหารเช้า)</span></div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">08.00 น.</div>
-                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">ลงทะเบียน</strong></div>
+                <div class="kku-timeline-time">08.00 - 08.50 น.</div>
+                <div class="kku-timeline-detail"><strong
+                    class="text-lg text-slate-800">ลงทะเบียนเข้าร่วมพิธีไหว้ครูดนตรีไทย</strong></div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time highlight">09.00 น.</div>
+                <div class="kku-timeline-time highlight">09.00 - 12.00 น.</div>
                 <div class="kku-timeline-detail highlight"><strong
-                    class="text-xl text-primary-dark">พิธีไหว้ครูดนตรี</strong><span
-                    class="text-primary-main text-sm font-medium mt-1 block">ผู้อ่านโองการไหว้ครู โดย ผศ.ดร.ประชา
+                    class="text-xl text-primary-dark">ประธานจุดธูปเทียนชัยประกอบพิธีไหว้ครูดนตรี</strong><span
+                    class="text-primary-main text-sm font-medium mt-1 block">โดย ผู้ช่วยศาสตราจารย์พิเศษประชา
                     สามเสน</span></div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time highlight">11.30 น.</div>
-                <div class="kku-timeline-detail highlight"><strong
-                    class="text-xl text-primary-dark">พิธีครอบครู</strong><span
-                    class="text-primary-main text-sm mt-1 block">เริ่มดำเนินการครอบครูตามลำดับประเภท</span></div>
+                <div class="kku-timeline-time">12.00 - 13.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">รับประทานอาหารกลางวัน</strong>
+                </div>
               </div>
               <div class="kku-timeline-item">
-                <div class="kku-timeline-time">13.30 น.</div>
-                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">เสร็จสิ้นพิธีการ</strong><span
-                    class="text-slate-500 text-sm mt-1 block">ถ่ายภาพหมู่เป็นที่ระลึก</span></div>
+                <div class="kku-timeline-time highlight">13.00 - 15.00 น.</div>
+                <div class="kku-timeline-detail highlight"><strong
+                    class="text-xl text-primary-dark">ประกอบพิธีไหว้ครู (ครอบครู-รับมอบ)</strong><span
+                    class="text-primary-main text-sm mt-1 block">โดย ผู้ช่วยศาสตราจารย์พิเศษประชา สามเสน</span></div>
+              </div>
+              <div class="kku-timeline-item">
+                <div class="kku-timeline-time">15.00 น.</div>
+                <div class="kku-timeline-detail"><strong class="text-lg text-slate-800">เสร็จพิธี</strong></div>
               </div>
             </div>
           </div>
@@ -249,8 +311,8 @@
 
     <!-- KHROB KHRU INFO SECTION -->
     <section id="khrob" class="kku-section">
-      <div class="kku-container fade-in-up">
-        <div class="kku-section-header">
+      <div class="kku-container">
+        <div class="kku-section-header fade-in-up">
           <span class="eyebrow text-primary-main text-xs uppercase tracking-widest block mb-2 font-bold">Ceremony
             Details</span>
           <h2 class="kku-section-title">ประเภทการครอบครูและเงินกำนล</h2>
@@ -259,7 +321,7 @@
         </div>
 
         <div class="khrob-grid">
-          <div class="khrob-card-grid">
+          <div class="khrob-card-grid fade-in-up delay-100">
             <article class="khrob-card">
               <div class="khrob-card-head">
                 <span class="khrob-card-icon bg-primary-light text-primary-main">
@@ -317,7 +379,7 @@
             </article>
           </div>
 
-          <aside class="khrob-callout">
+          <aside class="khrob-callout fade-in-up delay-200">
             <div class="khrob-callout-top">
               <span class="khrob-callout-label">ค่าขันไหว้ครู</span>
               <h3 class="khrob-callout-title">ขันไหว้ครบจัดให้พร้อม</h3>
@@ -346,7 +408,7 @@
         </div>
 
         <div class="kku-accordion-group shadow-sm bg-white border border-slate-200 rounded-2xl">
-          <div class="kku-accordion border-b border-slate-100">
+          <div class="kku-accordion border-b border-slate-100 fade-in-up delay-100">
             <button class="kku-accordion-btn">
               <span>ต้องลงทะเบียนล่วงหน้าหรือไม่?</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -359,7 +421,7 @@
               </p>
             </div>
           </div>
-          <div class="kku-accordion border-b border-slate-100">
+          <div class="kku-accordion border-b border-slate-100 fade-in-up delay-200">
             <button class="kku-accordion-btn">
               <span>เงินกำนลต้องเตรียมอย่างไร?</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -372,7 +434,7 @@
               </p>
             </div>
           </div>
-          <div class="kku-accordion">
+          <div class="kku-accordion fade-in-up delay-300">
             <button class="kku-accordion-btn">
               <span>ปิดรับลงทะเบียนเมื่อไร?</span>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -391,39 +453,64 @@
   </main>
 
   <!-- ==========================================
-       FOOTER (refreshed: Font Awesome + modern layout)
+       FOOTER (Professional 2-Column Layout — matches the footer
+       used in ระบบลงทะเบียนบรรเลงถวายมือ)
        ========================================== -->
-  <footer class="footer-new w-full mt-auto" role="contentinfo">
-    <div class="footer-inner max-w-7xl mx-auto px-4 py-8">
-      <div class="flex items-center gap-4">
-        <img src="assets/KKU-main.svg" alt="คณะศิลปกรรมศาสตร์" class="h-10">
-        <div>
-          <p class="text-sm font-semibold text-slate-800 m-0">คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น</p>
-          <p class="text-xs text-slate-500 m-0">ระบบบริหารจัดการกิจกรรมและฐานข้อมูล • &copy; 2569</p>
+  <footer class="wk-footer" role="contentinfo">
+    <div class="wk-footer-inner">
+
+      <!-- ส่วนบน: โลโก้, รายละเอียด, ลิงก์ และ โซเชียล -->
+      <div class="wk-footer-top">
+
+        <!-- ซ้าย: โลโก้ และ คำอธิบาย -->
+        <div class="wk-footer-left">
+          <div class="wk-footer-logos">
+            <img src="assets/Main-logo.svg" alt="ตรางานพิธีไหว้ครู">
+            <img src="assets/KKU-main.svg" alt="ตรามหาวิทยาลัยขอนแก่น">
+            <img src="assets/FA-logo.svg" alt="ตราคณะศิลปกรรมศาสตร์">
+          </div>
+          <div class="wk-footer-desc">
+            คณะศิลปกรรมศาสตร์ มหาวิทยาลัยขอนแก่น<br>
+            พิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ มหาวิทยาลัยขอนแก่น
+          </div>
         </div>
+
+        <!-- ขวา: เมนูนำทาง และ ปุ่มโซเชียล -->
+        <div class="wk-footer-right">
+          <nav class="wk-footer-nav" aria-label="ลิงก์ท้ายเว็บไซต์">
+            <a href="#schedule">กำหนดการ</a>
+            <a href="#khrob">การครอบครู</a>
+            <a href="register.html">ลงทะเบียน</a>
+            <a href="donate.html">ร่วมบริจาค</a>
+          </nav>
+          <div class="wk-footer-socials">
+            <a href="https://www.facebook.com/profile.php?id=100064752726252" target="_blank" rel="noreferrer" aria-label="Facebook"
+              class="wk-social-btn">
+              <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+            </a>
+          </div>
+        </div>
+
       </div>
 
-      <div class="flex items-center gap-4">
-        <nav class="footer-nav hidden sm:flex gap-4 text-sm text-slate-600">
-          <a href="#schedule" class="hover:text-primary-main">กำหนดการ</a>
-          <a href="#khrob" class="hover:text-primary-main">การครอบครู</a>
-          <a href="register.html" class="hover:text-primary-main">ลงทะเบียน</a>
-          <a href="donate.html" class="hover:text-primary-main">ร่วมสมทบ</a>
-        </nav>
+      <!-- ส่วนล่าง: เส้นคั่น, ลิขสิทธิ์ และ reCAPTCHA -->
+      <div class="wk-footer-bottom">
 
-        <div class="footer-social flex items-center gap-3">
-          <a href="https://www.facebook.com/kkustudentunion" target="_blank" rel="noreferrer" aria-label="Facebook"
-            class="social-btn">
-            <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
-          </a>
-          <a href="#" aria-label="Instagram" class="social-btn">
-            <i class="fa-brands fa-instagram" aria-hidden="true"></i>
-          </a>
-          <a href="#" aria-label="Contact" class="social-btn">
-            <i class="fa-solid fa-comment-dots" aria-hidden="true"></i>
-          </a>
+        <!-- ซ้ายล่าง: Copyright -->
+        <div class="wk-footer-copy">
+          <p>&copy; 2569 พิธีไหว้ครูดนตรี ภาคตะวันออกเฉียงเหนือ มหาวิทยาลัยขอนแก่น</p>
+          <p>Developed by Yanakon S.</p>
         </div>
+
+        <!-- ขวาล่าง: ข้อตกลงของ Google reCAPTCHA -->
+        <div class="wk-footer-recaptcha">
+          เว็บไซต์นี้ได้รับการปกป้องด้วย reCAPTCHA และอยู่ภายใต้
+          <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">นโยบายความเป็นส่วนตัว</a> และ
+          <a href="https://policies.google.com/terms" target="_blank" rel="noreferrer">ข้อกำหนดในการให้บริการ</a> ของ Google
+        </div>
+
       </div>
+
     </div>
   </footer>
 
@@ -433,6 +520,7 @@
   <script src="js/config.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/main.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", async () => {
 
@@ -472,10 +560,78 @@
       const header = document.getElementById('mainHeader');
       if (header) window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 10));
 
+      // Hero Background Slideshow (5 images, auto-crossfade every 5s)
+      const slideshow = document.getElementById('heroSlideshow');
+      if (slideshow) {
+        const slides = slideshow.querySelectorAll('.kku-hero-slide');
+        let activeIndex = 0;
+        if (slides.length > 1) {
+          setInterval(() => {
+            slides[activeIndex].classList.remove('is-active');
+            activeIndex = (activeIndex + 1) % slides.length;
+            slides[activeIndex].classList.add('is-active');
+          }, 5000);
+        }
+      }
+
+      // นับถอยหลังสู่วันงาน (ย้ายมาจาก main.js เดิมที่ไม่เคยถูกเรียกใช้ในหน้านี้)
+      var EVENT_START = new Date('2026-07-25T17:00:00+07:00');
+      function updateCountdown() {
+        var el = document.getElementById('countdownText');
+        if (!el) return;
+        var diffMs = EVENT_START.getTime() - Date.now();
+        if (diffMs <= 0) {
+          el.textContent = 'พิธีได้เริ่มขึ้นแล้ว';
+          return;
+        }
+        var days = Math.floor(diffMs / 86400000);
+        var hours = Math.floor((diffMs % 86400000) / 3600000);
+        if (days > 0) {
+          el.textContent = 'อีก ' + days.toLocaleString('th-TH') + ' วัน ' + hours + ' ชม. ถึงวันงาน';
+        } else {
+          var minutes = Math.floor((diffMs % 3600000) / 60000);
+          el.textContent = 'อีก ' + hours + ' ชม. ' + minutes + ' นาที ถึงวันงาน';
+        }
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 60000);
+
       // --- 2. Data Fetching (Home Logic) ---
       function safeUpdate(elementId, value) {
         const el = document.getElementById(elementId);
         if (el) { el.innerHTML = value; el.classList.remove('skeleton'); }
+      }
+
+      // ตัวเลขสถิติ/ราคา: แทนที่จะโผล่มาทันที ให้นับไล่ขึ้นจาก 0 เมื่อเลื่อนมาเห็น ดูมีชีวิตชีวาขึ้น
+      const countObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { animateCount(entry.target); countObserver.unobserve(entry.target); }
+        });
+      }, { threshold: 0.3 });
+
+      function animateCount(el) {
+        const target = Number(el.dataset.countTarget) || 0;
+        const suffix = el.dataset.countSuffix || '';
+        const duration = 1400;
+        const startTime = performance.now();
+        function tick(now) {
+          const progress = Math.min((now - startTime) / duration, 1);
+          const isDone = progress >= 1;
+          const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+          const value = isDone ? target : Math.round(target * eased);
+          el.innerHTML = value.toLocaleString('th-TH') + (suffix ? ' ' + suffix : '');
+          if (!isDone) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }
+
+      function setCountTarget(elementId, target, suffixHTML) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.dataset.countTarget = target;
+        el.dataset.countSuffix = suffixHTML || '';
+        el.innerHTML = '0' + (suffixHTML ? ' ' + suffixHTML : '');
+        countObserver.observe(el);
       }
 
       try {
@@ -490,12 +646,12 @@
           safeUpdate('metaVenue', `จัดงานวันที่ ${d.eventDateText} ณ ${d.venue}`);
           safeUpdate('eventSubtitle', `ประจำปีการศึกษา 2569 ${d.eventName}<br> ณ ${d.venue}`);
 
-          safeUpdate('price_ching', d.prices.ching.toLocaleString());
-          safeUpdate('price_sathukan', d.prices.sathukan.toLocaleString());
-          safeUpdate('price_tra_hom_roeng', d.prices.tra_hom_roeng.toLocaleString());
-          safeUpdate('price_krabong_kan', d.prices.krabong_kan.toLocaleString());
-          safeUpdate('price_bat_sakunee', d.prices.bat_sakunee.toLocaleString());
-          safeUpdate('price_khan', d.prices.khan.toLocaleString());
+          setCountTarget('price_ching', d.prices.ching);
+          setCountTarget('price_sathukan', d.prices.sathukan);
+          setCountTarget('price_tra_hom_roeng', d.prices.tra_hom_roeng);
+          setCountTarget('price_krabong_kan', d.prices.krabong_kan);
+          setCountTarget('price_bat_sakunee', d.prices.bat_sakunee);
+          setCountTarget('price_khan', d.prices.khan);
 
           const seatEl = document.getElementById('seatsStatusText');
           if (seatEl) {
@@ -519,13 +675,13 @@
             }
           }
 
-          safeUpdate('totalParticipants', `${d.totalRegisteredParticipants.toLocaleString()} <span class="text-base text-slate-400 font-medium">คน</span>`);
+          setCountTarget('totalParticipants', d.totalRegisteredParticipants, '<span class="text-base text-slate-400 font-medium">คน</span>');
         }
 
         // อัปเดตยอดทำบุญ
         if (donRes.status === 'fulfilled' && donRes.value) {
-          safeUpdate('totalDonationAmount', `${Number(donRes.value.totalAmount).toLocaleString()} <span class="text-base text-slate-400 font-medium">บาท</span>`);
-          safeUpdate('totalDonors', `${donRes.value.donorCount.toLocaleString()} <span class="text-base text-slate-400 font-medium">ท่าน</span>`);
+          setCountTarget('totalDonationAmount', Number(donRes.value.totalAmount), '<span class="text-base text-slate-400 font-medium">บาท</span>');
+          setCountTarget('totalDonors', donRes.value.donorCount, '<span class="text-base text-slate-400 font-medium">ท่าน</span>');
         }
 
       } catch (error) {
