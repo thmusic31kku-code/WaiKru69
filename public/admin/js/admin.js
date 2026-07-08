@@ -112,6 +112,14 @@ function showDashboard() {
   document.getElementById('adminName').textContent = session.name;
   document.getElementById('adminRole').textContent = `${session.role.toUpperCase()} | ${displayId}`;
 
+  // วงกลมตัวอักษรย่อ: เดิมฝัง "A" ตายตัวไว้ใน HTML ไม่ว่าใครล็อกอินก็เห็น A เสมอ
+  // เปลี่ยนให้ดึงตัวอักษรแรกจากชื่อจริงของแอดมินที่ล็อกอินอยู่แทน
+  const avatarEl = document.getElementById('adminAvatar');
+  if (avatarEl) {
+    const label = (session.name || displayId || '?').trim();
+    avatarEl.textContent = label.charAt(0).toUpperCase();
+  }
+
   const isSuperadmin = session.role === 'superadmin';
   document.querySelectorAll('[data-superadmin-only]').forEach(el => el.classList.toggle('hidden', !isSuperadmin));
 

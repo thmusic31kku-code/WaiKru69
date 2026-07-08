@@ -83,6 +83,8 @@
   overflow-y: auto;
 }
 
+/* บนมือถือ: เปลี่ยนไซด์บาร์เป็นเมนูลิ้นชัก (off-canvas drawer) แทนการเรียงต่อกันในแนวตั้ง
+   เดิมไซด์บาร์จะกลายเป็นบล็อกยาวอยู่บนสุดของหน้า ผู้ใช้ต้องเลื่อนผ่านปุ่มเมนูทั้งหมดก่อนถึงเนื้อหา */
 @media (max-width: 900px) {
   .admin-sidebar {
     position: fixed;
@@ -91,7 +93,7 @@
     height: 100vh;
     width: min(82vw, 300px);
     max-width: 300px;
-    background: var(--bg-body);
+    background-color: var(--bg-body);
     border-right: 1px solid var(--glass-border);
     border-bottom: none;
     transform: translateX(-100%);
@@ -275,6 +277,20 @@ body.sidebar-locked {
   gap: 12px;
 }
 
+/* ชื่อ/ตำแหน่งแอดมินที่แถบบน — ต้องการซ่อนเฉพาะบนจอที่แคบมากเพื่อประหยัดพื้นที่ แล้วแสดงตั้งแต่ ~640px ขึ้นไป
+   เดิมใช้คลาสร่วม "hidden sm:block" แต่ .hidden ถูกกำหนด display:none !important ไว้ ซึ่ง !important
+   จะทับ .sm\:block เสมอไม่ว่าหน้าจอจะกว้างแค่ไหน ผลคือชื่อ/ตำแหน่งไม่แสดงเลย เห็นแต่วงกลมตัวอักษรย่อ
+   จึงแยกเป็นคลาสเฉพาะที่ไม่ชน !important แทน */
+.admin-name-role {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .admin-name-role {
+    display: block;
+  }
+}
+
 .admin-content-area {
   padding: 32px;
   flex-grow: 1;
@@ -305,7 +321,6 @@ body.sidebar-locked {
 /* ฟอร์มสองคอลัมน์ในโมดัล (เช่น ฟอร์มเพิ่มผู้ดูแลระบบ, แก้ไขใบตอบรับ) แคบเกินไปบนจอมือถือ
    ให้เรียงเป็นคอลัมน์เดียวเมื่อพื้นที่ไม่พอ */
 @media (max-width: 480px) {
-
   #modalBox.grid-cols-2,
   #modalBox .grid-cols-2 {
     grid-template-columns: 1fr;
