@@ -72,7 +72,7 @@
 
 /* ---------- Sidebar ---------- */
 .admin-sidebar {
-  background: var(--bg-surface);
+  background: var(--bg-body);
   border-right: 1px solid var(--glass-border);
   display: flex;
   flex-direction: column;
